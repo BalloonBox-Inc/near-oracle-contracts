@@ -11,11 +11,11 @@ To get started with this template:
 5. Begin writing your smart contract in `src/lib.rs`
 6. Test the contract 
 
-    cargo test -- --nocapture
+    `cargo test -- --nocapture`
 
 8. Build the contract
 
-    RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release
+    `RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release`
 
 **Get more info at:**
 
