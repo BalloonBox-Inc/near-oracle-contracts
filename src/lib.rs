@@ -1,15 +1,38 @@
+// Import crates
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::near_bindgen;
+use near_sdk::{env, near_bindgen};
+
+// Declare a global variable
+const PUZZLE_NUMBER: u8 = 1;
 
 #[near_bindgen]
 #[derive(Default, BorshDeserialize, BorshSerialize)]
 pub struct Contract {
+    crossword_solution: String,
     // SETUP CONTRACT STATE
 }
 
 #[near_bindgen]
 impl Contract {
     // ADD CONTRACT METHODS HERE
+
+    // add a view-only function
+    pub fn get_puzzle_number(&self) -> u8 {
+        PUZZLE_NUMBER
+    }
+
+    // add 2 change-method functions
+    pub fn set_solution(&mut self, solution: String) {
+        self.crossword_solution = solution;
+    }
+
+    pub fn guess_solution(&mut self, solution: String) {
+        if self.crossword_solution == solution {
+            env::log_str("You guessed right")
+        } else {
+            env::log_str("Try again")
+        }
+    }
 }
 
 /*
