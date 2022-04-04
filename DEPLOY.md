@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://near.org/">
-    <img alt="Near" src="bit.ly/3NLYZZA" width="250" />
+    <img alt="Near" src="https://github.com/irene-bbox/sc-near-crossword/blob/master/pic/near.png" width="250" />
   </a>
 </p>
 
