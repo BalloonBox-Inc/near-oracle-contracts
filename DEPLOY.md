@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://near.org/">
-    <img alt="Near" src="https://imgur.com/a/JUDiS4y" width="250" />
+    <img alt="Near" src="bit.ly/3NLYZZA" width="250" />
   </a>
 </p>
 
@@ -8,11 +8,13 @@
 # Build & Deploy a NEAR Smart Contract
 This guide teaches you how to compile, deploy, and interact with a Rust Smart Contract on NEAR testnet. For more comprehensive NEAR SDK documentation consult their official webpage [here](https://www.near-sdk.io/zero-to-hero/basics/set-up-skeleton)
 
+---
 
-### Quick Start
+
+## Quick Start
 
 
-### Configure CLI
+## Configure CLI
 
 1. Install the NEAR CLI
 
@@ -39,7 +41,7 @@ near keys <youraccountname>.testnet
 ```
 
 
-### Set up Rust
+## Set up Rust
 
 If you haven't installed Rust yet, then install it now using `rustup`
 
