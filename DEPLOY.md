@@ -11,16 +11,16 @@ This guide teaches you how to compile, deploy, and interact with a Rust Smart Co
 ---
 
 
-## Quick Start
+## Create testnet account
 
 
 ## Configure CLI
 
 ```bash
-npm install -g near-cli                   # Install the NEAR CLI
-near                                      # To see various possible commands run
-near login                                # Log into your NEAR testnet wallet
-near keys <youraccountname>.testnet       # Visualize your keys running
+npm install -g near-cli                                                    # Install the NEAR CLI
+near                                                                       # To see various possible commands run
+near login                                                                 # Log into your NEAR testnet wallet
+near keys <youraccountname>.testnet                                        # Visualize your keys running
 ```
 
 
@@ -33,5 +33,54 @@ rustup target add wasm32-unknown-unknown                                    # Ad
 
 Some -but not all- Smart Contracts (e.g., SCRT Network, NEAR Protocol, etc.) compile to WebAssembly (Wasm) and that's why we add the toolchain for Rust.
 > :no_entry_sign: Note: NEAR never uses `cargo run`. Why? Because smart contracts are technically libraries and not binaries, so some blockchains, like NEAR choose not to compile a contract via commonly used Rust commands, like `cargo run`.
+
+
+## Prep smart contract
+
+This guide assumes you already have a ready-to-deploy smart contract. If you haven't, you can download a simple smart contract template [here.](https://github.com/near-examples/rust-template)
+
+
+## Deploy
+
+There are 4 basic steps to deploy a Smart Contract on NEAR:
+1. build contract
+2. create a sub-account (or delete and recreate it)
+3. deploy to sub account
+4. interact 
+
+Cd into the repo with the Rust codebase for your contract and run:
+
+```bash
+./build.sh                                                                                        # Build the contract
+near create-account subassountname.accountname.testnet --masterAccount accountname.testnet        # Create a subaccount
+near state subassountname.accountname.testnet                                                     # Check subaccount state
+# now ensure you're in the directory that contains the 'res' directory, then run
+near deploy subassountname.accountname.testnet --wasmFile res/my_crossword.wasm                   # Deploy the contract
+near state subassountname.accountname.testnet                                                     # Check again state of subaccount
+```
+
+There are few ways to interact with the contract, depending on whether you are calling on a method that is view-only or a method that changes the state of the contract. For view-only use the `near view` command:
+
+```bash
+near view subassountname.accountname.testnet <name_of_viewing_function>
+```
+
+For state-handling use the `near call` command:
+
+```bash
+near call subassountname.accountname.testnet <name_of_handling_function> '{"string": "Helloworld!"}' --accountId accountname.testnet
+```
+Notice that in the `near call` command we must include the `--accountId` flag. This is because changing the state of a contract cost a gas fee and thus we must specify which NEAR account we want to use to sign the transaction, and pay the gas fee.
+
+
+## Reset account state
+
+Your best bet to start fresh with a smart contract is to first **delete** the subaccount (sending all remaining testnet Ⓝ to a recipient)  and then **create** the account again, in this way: 
+
+```bash
+near delete subassountname.accountname.testnet accountname.testnet
+near create-account subassountname.accountname.testnet --masterAccount accountname.testnet
+```
+The first command deletes `subassountname.accountname.testnet` and sends the rest of its NEAR to `accountname.testnet`.
 
 
