@@ -13,6 +13,8 @@ This guide teaches you how to compile, deploy, and interact with a Rust Smart Co
 
 ## Create testnet account
 
+Navigate to NEAR testnet [wallet](https://wallet.testnet.near.org) and click on 'Create Account'.
+
 
 ## Configure CLI
 
