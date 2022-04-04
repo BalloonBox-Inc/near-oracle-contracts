@@ -3,7 +3,7 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{env, near_bindgen};
 
 // Declare a global variable
-const PUZZLE_NUMBER: u8 = 1;
+const PUZZLE_NUMBER: u8 = 3
 
 #[near_bindgen]
 #[derive(Default, BorshDeserialize, BorshSerialize)]
