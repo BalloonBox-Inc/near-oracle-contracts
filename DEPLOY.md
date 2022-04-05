@@ -61,6 +61,8 @@ near deploy subassountname.accountname.testnet --wasmFile res/my_crossword.wasm 
 near state subassountname.accountname.testnet                                                     # Check again state of subaccount
 ```
 
+## Interact
+
 There are few ways to interact with the contract, depending on whether you are calling on a method that is view-only or a method that changes the state of the contract. For view-only use the `near view` command:
 
 ```bash
