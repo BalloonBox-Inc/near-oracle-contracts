@@ -39,16 +39,16 @@ Some -but not all- Smart Contracts (e.g., SCRT Network, NEAR Protocol, etc.) com
 
 ## Prep smart contract
 
-This guide assumes you already have a ready-to-deploy smart contract. If you haven't, you can download a simple smart contract template [here.](https://github.com/near-examples/rust-template)
+This guide assumes you already have a ready-to-deploy smart contract. If you haven't, download a simple smart contract template [here.](https://github.com/near-examples/rust-template)
 
 
 ## Deploy
 
 There are 4 basic steps to deploy a Smart Contract on NEAR:
-1. build contract
-2. create a sub-account (or delete and recreate it)
-3. deploy to sub account
-4. interact 
+1. :wrench: build contract
+2. :truck: create a sub-account (or delete and recreate it)
+3. :clapper: deploy to sub account
+4. :surfer: interact 
 
 Cd into the repo with the Rust codebase for your contract and run:
 
