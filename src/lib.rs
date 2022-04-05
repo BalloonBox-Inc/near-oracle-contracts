@@ -23,20 +23,10 @@ impl Contract {
         }
     }
 
-    // // add a view-only function
-    // pub fn get_puzzle_number(&self) -> u8 {
-    //     PUZZLE_NUMBER
-    // }
-
     // costless query the state of the contract
     pub fn get_solution(&self) -> String {
         self.crossword_solution.clone()
     }
-
-    // // add 2 change-method functions: set a solution
-    // pub fn set_solution(&mut self, solution: String) {
-    //     self.crossword_solution = solution;
-    // }
 
     // check whether guessed solution is correct
     pub fn guess_solution(&mut self, solution: String) -> bool {
