@@ -77,7 +77,7 @@ near call subaccountname.accountname.testnet <name_of_handling_function> '{"stri
 Notice that in the `near call` command we must include the `--accountId` flag. This is because changing the state of a contract cost a gas fee and thus we must specify which NEAR account we want to use to sign the transaction, and pay the gas fee.
 
 
-## Reset account state
+## Reset account
 
 Your best bet to start fresh with a smart contract is to first **delete** the subaccount (sending all remaining testnet Ⓝ to a recipient)  and then **create** the account again, in this way: 
 
@@ -87,4 +87,7 @@ near create-account subaccountname.accountname.testnet --masterAccount accountna
 ```
 The first command deletes `subaccountname.accountname.testnet` and sends the rest of its NEAR to `accountname.testnet`.
 
+## Unit test
+
+Remember that a smart contract is technically a library as defined in the manifest file (which is the Cargo.toml). A consequence of writing a library in Rust is not having a 'main' function that runs, and that's why we use unit tests to ineract with the contract instead. 
 
