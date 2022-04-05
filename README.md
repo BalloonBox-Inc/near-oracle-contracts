@@ -110,4 +110,5 @@ near deploy subaccount.account.testnet --wasmFile res/<my_projectname>.wasm \
 ```
 
 > `<my_projectname>` is the name you assigned to the 'name' variable inside your Cargo.toml file
-> :radioactive: Beware! Every smart contract can only be initialized **once** and never again!
+
+> :radioactive: Beware though! Every smart contract can only be initialized **once** and never again!
