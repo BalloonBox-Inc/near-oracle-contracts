@@ -82,9 +82,9 @@ Notice that in the `near call` command we must include the `--accountId` flag. T
 Your best bet to start fresh with a smart contract is to first **delete** the subaccount (sending all remaining testnet Ⓝ to a recipient)  and then **create** the account again, in this way: 
 
 ```bash
-near delete subassountname.accountname.testnet accountname.testnet
-near create-account subassountname.accountname.testnet --masterAccount accountname.testnet
+near delete subaccountname.accountname.testnet accountname.testnet
+near create-account subaccountname.accountname.testnet --masterAccount accountname.testnet
 ```
-The first command deletes `subassountname.accountname.testnet` and sends the rest of its NEAR to `accountname.testnet`.
+The first command deletes `subaccountname.accountname.testnet` and sends the rest of its NEAR to `accountname.testnet`.
 
 
