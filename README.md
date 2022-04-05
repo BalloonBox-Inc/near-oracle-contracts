@@ -100,10 +100,10 @@ cargo test <name_of_test_function> -- --nocapture       # only run the specified
 ```
 
 ## Batch Actions
-Batch actions occurs when you want to perform multiple actions in batch, for example, when you want to deploy a smart contract and call an initialization function at the same time. Fortunately, NEAR CLI has flags especially designed for this, which you can add to the deploy command to batch multiple actions at once. Just run the `near deploy` command with the handy `--initFunction` and `--initArgs` flags. 
+Batch actions occurs when you want to perform multiple actions in batch, for example, when you want to *deploy* a smart contract and *call* an initialization function at the same time. Fortunately, NEAR CLI has flags especially designed for this, which you can add to the deploy command to batch multiple actions at once. Just run the `near deploy` command with the handy `--initFunction` and `--initArgs` flags. 
 
 ```bash
-# Deploy + call the init functions SIMULTANEOUSLY
+# Deploy & call the init functions SIMULTANEOUSLY
 near deploy subaccount.account.testnet --wasmFile res/<my_projectname>.wasm \
   --initFunction 'my_init_function' \
   --initArgs '{"parameter": "my_init_parameter"}'

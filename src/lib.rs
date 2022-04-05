@@ -2,8 +2,8 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{env, near_bindgen};
 
-// Declare a global variable
-const PUZZLE_NUMBER: u8 = 3;
+// // Declare a global variable
+// const PUZZLE_NUMBER: u8 = 3;
 
 #[near_bindgen]
 #[derive(Default, BorshDeserialize, BorshSerialize)]
@@ -23,18 +23,27 @@ impl Contract {
         }
     }
 
-    // add a view-only function
-    pub fn get_puzzle_number(&self) -> u8 {
-        PUZZLE_NUMBER
+    // // add a view-only function
+    // pub fn get_puzzle_number(&self) -> u8 {
+    //     PUZZLE_NUMBER
+    // }
+
+    // costless query the state of the contract
+    pub fn get_solution(&self) -> String {
+        self.crossword_solution.clone()
     }
 
-    // add 2 change-method functions
-    pub fn set_solution(&mut self, solution: String) {
-        self.crossword_solution = solution;
-    }
+    // // add 2 change-method functions: set a solution
+    // pub fn set_solution(&mut self, solution: String) {
+    //     self.crossword_solution = solution;
+    // }
 
+    // check whether guessed solution is correct
     pub fn guess_solution(&mut self, solution: String) -> bool {
-        if self.crossword_solution == solution {
+        let hashed_input = env::sha256(solution.as_bytes());
+        let hashed_input_hex = hex::encode(&hashed_input);
+
+        if hashed_input_hex == self.crossword_solution {
             env::log_str("You guessed right");
             true
         } else {
@@ -44,6 +53,11 @@ impl Contract {
     }
 }
 
+//___________________________________________________________________________________//
+//                                                                                   //
+//                                   Unit Tests                                      //
+//                                                                                   //
+//___________________________________________________________________________________//
 /*
  * the rest of this file sets up unit tests
  * to run these, the command will be:
