@@ -57,9 +57,10 @@ There are 4 basic steps to deploy a Smart Contract on NEAR:
 near create-account subaccountname.accountname.testnet --masterAccount accountname.testnet        # Create a subaccount
 near state subaccountname.accountname.testnet                                                     # Check subaccount state
 # now ensure you're in the directory that contains the 'res' directory, then run
-near deploy subaccountname.accountname.testnet --wasmFile res/my_crossword.wasm                   # Deploy the contract
+near deploy subaccountname.accountname.testnet --wasmFile res/<my_projectname>.wasm               # Deploy the contract
 near state subaccountname.accountname.testnet                                                     # Check again state of subaccount
 ```
+`<my_projectname>` is the name you assigned to the 'name' variable inside your Cargo.toml file
 
 ## Interact
 
@@ -86,6 +87,7 @@ near delete subaccountname.accountname.testnet accountname.testnet
 near create-account subaccountname.accountname.testnet --masterAccount accountname.testnet
 ```
 The first command deletes `subaccountname.accountname.testnet` and sends the rest of its NEAR to `accountname.testnet`.
+> :warning: Beware though! Every interaction with your account costs gas (e.g., creating an accounts costs 100 Ⓝ).
 
 ## Unit test
 
@@ -96,3 +98,14 @@ cargo test                                        # w/o output
 cargo test -- --nocapture                         # this additional flag includes the test output
 ```
 
+## Batch Actions
+Batch actions occurs when you want to perform multiple actions in batch, for example, when you want to deploy a smart contract and call an initialization function at the same time. Fortunately, NEAR CLI has flags especially designed for this, which you can add to the deploy command to batch multiple actions at once. Just run the `near deploy` command with the handy `--initFunction` and `--initArgs` flags. 
+
+```bash
+# Deploy + call the init functions SIMULTANEOUSLY
+near deploy subaccount.account.testnet --wasmFile res/<my_projectname>.wasm \
+  --initFunction 'my_init_function' \
+  --initArgs '{"parameter": "my_init_parameter"}'
+```
+
+> `<my_projectname>` is the name you assigned to the 'name' variable inside your Cargo.toml file

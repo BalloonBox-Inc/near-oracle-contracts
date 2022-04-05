@@ -16,9 +16,10 @@ impl Contract {
     // ADD CONTRACT METHODS HERE
 
     // create a new 'Contract' object
-    fn new(crossword_solution: String) -> Contract {
-        Contract {
-            crossword_solution: crossword_solution,
+    #[init]
+    pub fn new(solution: String) -> Self {
+        Self {
+            crossword_solution: solution,
         }
     }
 
