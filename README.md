@@ -92,7 +92,8 @@ The first command deletes `subaccountname.accountname.testnet` and sends the res
 Remember that a smart contract is technically a library as defined in the manifest file (which is the Cargo.toml). A consequence of writing a library in Rust is not having a 'main' function that runs, and that's why we use unit tests to ineract with the contract instead. Unit tests act as a helper during development. To execute your test run
 
 ```bash
-cargo test                                        # w/o output 
-cargo test -- --nocapture                         # this additional flag includes the test output
+cargo test                                              # w/o output 
+cargo test -- --nocapture                               # this additional flag includes the test output
+cargo test <name_of_test_function> -- --nocapture       # only run the specified test
 ```
 
