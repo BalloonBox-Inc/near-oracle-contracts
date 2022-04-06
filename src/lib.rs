@@ -1,46 +1,175 @@
 // Import crates
-use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
+use near_sdk::collections::{LookupMap, UnorderedSet};
+use near_sdk::{
+    borsh::{self, BorshDeserialize, BorshSerialize},
+    log,
+    serde::{Deserialize, Serialize},
+    AccountId, PanicOnDefault, Promise,
+};
 use near_sdk::{env, near_bindgen};
 
-// // Declare a global variable
-// const PUZZLE_NUMBER: u8 = 3;
+// 5 Ⓝ in yoctoNEAR
+const PRIZE_AMOUNT: u128 = 5_000_000_000_000_000_000_000_000;
 
-#[near_bindgen]
-#[derive(Default, BorshDeserialize, BorshSerialize)]
-pub struct Contract {
-    crossword_solution: String, // SETUP CONTRACT STATE
+//___________________________________________________________________________________//
+//                                                                                   //
+//                                  Structs & Enums                                  //
+//                                                                                   //
+//___________________________________________________________________________________//
+
+#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, Debug)]
+#[serde(crate = "near_sdk::serde")]
+pub enum PuzzleStatus {
+    Unsolved,
+    Solved { memo: String },
+}
+
+#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, Debug)]
+#[serde(crate = "near_sdk::serde")]
+pub enum AnswerDirection {
+    Across,
+    Down,
+}
+
+// Coordinates of where the crossword begins
+#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, Debug)]
+#[serde(crate = "near_sdk::serde")]
+pub struct CoordinatePair {
+    x: u8,
+    y: u8,
+}
+
+// Info on puzzle answer
+#[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, Debug)]
+#[serde(crate = "near_sdk::serde")]
+pub struct Answer {
+    num: u8,
+    start: CoordinatePair,
+    direction: AnswerDirection,
+    length: u8,
+    clue: String,
+}
+
+// Puzzle status
+#[derive(BorshDeserialize, BorshSerialize, Debug)]
+pub struct Puzzle {
+    status: PuzzleStatus, // ⟵ An enum we'll get to soon
+    answer: Vec<Answer>,  // ⟵ Another struct we've defined
+}
+
+// Same Puzzle as above w/ human-readable (not in bytes) hash of the crossword solution
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct JsonPuzzle {
+    solution_hash: String,
+    status: PuzzleStatus,
+    answer: Vec<Answer>,
 }
 
 #[near_bindgen]
-impl Contract {
+#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
+// 'Crossword' is our primary struct or singleton.
+// Remember the singleton is the ONLY struct that ALWAYS gets the #[near_bindgen] macro placed on it
+pub struct Crossword {
+    // crossword_solution: String, // SETUP CONTRACT STATE
+    // add an owner_id because it's common in smart contract development to implement a rudimentary permission system which can restrict access to certain functions
+    owner_id: AccountId,
+    puzzles: LookupMap<String, Puzzle>, // ⟵ 'Puzzle' is a struct we're defining
+    unsolved_puzzles: UnorderedSet<String>,
+}
+
+// Check user balance
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct StorageBalance {
+    pub total: u128,
+    pub available: u128,
+}
+
+//___________________________________________________________________________________//
+//                                                                                   //
+//                              Implementations                                      //
+//                                                                                   //
+//___________________________________________________________________________________//
+#[near_bindgen]
+impl Crossword {
     // ADD CONTRACT METHODS HERE
 
-    // create a new 'Contract' object
+    // create a new 'Corossword' object
     #[init]
-    pub fn new(solution: String) -> Self {
+    pub fn new(owner_id: AccountId) -> Self {
         Self {
-            crossword_solution: solution,
+            owner_id,
+            puzzles: LookupMap::new(b"c"),
+            unsolved_puzzles: UnorderedSet::new(b"u"),
         }
     }
 
-    // costless query the state of the contract
-    pub fn get_solution(&self) -> String {
-        self.crossword_solution.clone()
+    // create a new puzzle method to insert multiple crosswords
+    pub fn new_puzzle(&mut self, solution_hash: String, answers: Vec<Answer>) {
+        // first thing that happens in the new_puzzle method is a check
+        // we check that the predecessor (whoever called this method last) is indeed the contract owner
+        assert_eq!(
+            env::predecessor_account_id(),
+            self.owner_id,
+            "Only the owner may call this method"
+        ); // if someone else other than the owner is trying to call new_puzzle, the smart contract will panic,
+           // going no further. Hence, notice that assert_eq! breaks contract executions when it panics.
+
+        let existing = self.puzzles.insert(
+            &solution_hash,
+            &Puzzle {
+                status: PuzzleStatus::Unsolved,
+                answer: answers,
+            },
+        );
+
+        // perform another check: add a new puzzle only if it's not a duplicate of a pre-existing one
+        assert!(existing.is_none(), "Puzzle with that key already exists");
+        self.unsolved_puzzles.insert(&solution_hash);
     }
 
-    // check whether guessed solution is correct
-    pub fn guess_solution(&mut self, solution: String) -> bool {
+    // submit solution to the net
+    pub fn submit_solution(&mut self, solution: String, memo: String) {
         let hashed_input = env::sha256(solution.as_bytes());
         let hashed_input_hex = hex::encode(&hashed_input);
 
-        if hashed_input_hex == self.crossword_solution {
-            env::log_str("You guessed right");
-            true
-        } else {
-            env::log_str("Try again");
-            false
-        }
+        // Check to see if the hashed answer is among the puzzles
+        let mut puzzle = self
+            .puzzles
+            .get(&hashed_input_hex)
+            .expect("ERR_NOT_CORRECT_ANSWER");
+
+        // Check if the puzzle is already solved. If it's unsolved, set the status to solved,
+        //   then proceed to update the puzzle and pay the winner.
+        puzzle.status = match puzzle.status {
+            PuzzleStatus::Unsolved => PuzzleStatus::Solved { memo: memo.clone() },
+            _ => {
+                env::panic_str("ERRO_PUZZLE_SOLVED");
+            }
+        };
+
+        // Reinsert the puzzle back in after we modified the status
+        self.puzzles.insert(&hashed_input_hex, &puzzle);
+        // Remove from the list of unsolved ones
+        self.unsolved_puzzles.remove(&hashed_input_hex);
+
+        log!(
+            "Puzzle with solution hash {} solved, with memo {}",
+            hashed_input_hex,
+            memo
+        );
+
+        // Transfer the prize money to the winner
+        Promise::new(env::predecessor_account_id()).transfer(PRIZE_AMOUNT);
     }
+
+    // // costless query the state of the contract
+    // // CHALLENGE: try and query for free ALL solutions from the contract
+    // // performs a check to see whether the querier is the contract owner
+    // pub fn get_solution(&self) -> String {
+    //     self.crossword_solution.clone()
+    // }
 }
 
 //___________________________________________________________________________________//
