@@ -24,12 +24,6 @@ pub enum PuzzleStatus {
     Solved { memo: String },
 }
 
-#[derive(Serialize)]
-#[serde(crate = "near_sdk::serde")]
-pub struct UnsolvedPuzzles {
-    puzzles: Vec<JsonPuzzle>,
-}
-
 #[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub enum AnswerDirection {
@@ -168,47 +162,6 @@ impl Crossword {
 
         // Transfer the prize money to the winner
         Promise::new(env::predecessor_account_id()).transfer(PRIZE_AMOUNT);
-    }
-
-    /// Get the hash of a crossword puzzle solution from the unsolved_puzzles
-    pub fn get_solution(&self, puzzle_index: u32) -> Option<String> {
-        let mut index = 0;
-        for puzzle_hash in self.unsolved_puzzles.iter() {
-            if puzzle_index == index {
-                return Some(puzzle_hash);
-            }
-            index += 1;
-        }
-        // Did not find that index
-        None
-    }
-
-    pub fn get_puzzle_status(&self, solution_hash: String) -> Option<PuzzleStatus> {
-        let puzzle = self.puzzles.get(&solution_hash);
-        if puzzle.is_none() {
-            return None;
-        }
-        Some(puzzle.unwrap().status)
-    }
-
-    pub fn get_unsolved_puzzles(&self) -> UnsolvedPuzzles {
-        let solution_hashes = self.unsolved_puzzles.to_vec();
-        let mut all_unsolved_puzzles = vec![];
-        for hash in solution_hashes {
-            let puzzle = self
-                .puzzles
-                .get(&hash)
-                .unwrap_or_else(|| env::panic_str("ERR_LOADING_PUZZLE"));
-            let json_puzzle = JsonPuzzle {
-                solution_hash: hash,
-                status: puzzle.status,
-                answer: puzzle.answer,
-            };
-            all_unsolved_puzzles.push(json_puzzle)
-        }
-        UnsolvedPuzzles {
-            puzzles: all_unsolved_puzzles,
-        }
     }
 
     // // costless query the state of the contract

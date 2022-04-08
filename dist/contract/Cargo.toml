@@ -1,7 +1,7 @@
 [package]
-name = "my_crossword"
+name = "my-crossword"
 version = "0.1.0"
-authors = ["Near Inc <hello@near.org>", "Mike Purvis <mike@near.org>"]
+authors = ["zion.testnet"]
 edition = "2018"
 
 [lib]

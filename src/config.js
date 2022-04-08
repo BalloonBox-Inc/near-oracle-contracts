@@ -1,4 +1,4 @@
-const CONTRACT_NAME = process.env.CONTRACT_NAME || 'your-crossword-account.testnet';
+const CONTRACT_NAME = process.env.CONTRACT_NAME || 'crossword.zion.testnet';
 
 function getConfig(env) {
   switch(env) {

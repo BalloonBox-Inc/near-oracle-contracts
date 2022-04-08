@@ -34,7 +34,7 @@ async function initCrossword() {
     solutionHash = chainData.puzzles[0]['solution_hash'];
     data = mungeBlockchainCrossword(chainData.puzzles);
   } else {
-    console.log("Oof, there's no crossword to play right now, friend.");
+    console.log("Oof, there's no crossword to play right now, zion.");
   }
   return { data, solutionHash, nearConfig, walletConnection, currentUser };
 }
