@@ -1,16 +1,16 @@
 
-# :game_die: :spades: :soccer:  Play Crossword Puzzles on NEAR Protocol
-![NEAR Login](https://github.com/irene-bbox/sc-near-crossword/blob/master/public/near_black.png)
+# :spades: :spades: :spades:  Play Crossword Puzzles on NEAR Protocol
+![NEAR Login](https://github.com/irene-bbox/sc-near-crossword/blob/master/public/near_white.png)
 
 ---
-git c
+
 ### Requirements  
 
-:gear: node.js and npm (or yarn)
+node.js and npm (or yarn)
 
 ### Getting started 
 
-:bellhop_bell: Run the following command on your local environment:
+Run the following command on your local environment:
 
 ```
 git clone https://github.com/irene-bbox/sc-near-crossword.git <path_to_local_repository>
@@ -23,8 +23,8 @@ Open [http://localhost:1234](http://localhost:1234) to view it in the browser.
 
 ### Log into NEAR 
 
-:satellite: Create a [NEAR wallet](https://wallet.testnet.near.org/) on testnet.\
-Log into your NEAR wallet from the browser where you launched the crossword puzzle.
+Create a [NEAR wallet](https://wallet.testnet.near.org/) on testnet.\
+Log into your NEAR wallet from the browser where you launched the crossword puzzle. :satellite: 
 ![NEAR Login](https://github.com/irene-bbox/sc-near-crossword/blob/master/public/login.png)
 
 
