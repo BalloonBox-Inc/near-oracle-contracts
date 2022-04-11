@@ -17,9 +17,14 @@ node.js and npm (or yarn)
 Run the following command on your local environment:
 
 ```
-git clone https://github.com/irene-bbox/sc-near-crossword.git <path_to_local_repository>
-cd <path_to_local_repository>
-env CONTRACT_NAME=crossword.zion.testnet npm run start
+git clone https://github.com/irene-bbox/sc-near-crossword.git <path_to_local_repository>        # clone repo
+cd <path_to_local_repository>                                                                   # enter repo
+
+cd contract                                                                                     # enter directory with Smart Contract code                 export PATH="$HOME/.cargo/bin:$PATH"                                                            # (optional) exports path to Cargo Rust
+./build.sh                                                                                      # compile the Smart Contract
+
+cd ..                                                                                           # exit Smart Contract directory
+env CONTRACT_NAME=crossword.zion.testnet npm run start                                          # launch React dApp
 ```
 
 Tha last command will runs the app in the development mode.\
