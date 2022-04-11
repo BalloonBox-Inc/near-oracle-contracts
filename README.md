@@ -34,7 +34,8 @@ Run the following command on your local environment:
 git clone https://github.com/irene-bbox/sc-near-crossword.git <path_to_local_repository>        # clone repo
 cd <path_to_local_repository>                                                                   # enter repo
 
-cd contract                                                                                     # enter directory with Smart Contract code                 export PATH="$HOME/.cargo/bin:$PATH"                                                            # (optional) add the Cargo Rust dir to path
+cd contract                                                                                     # enter directory with Smart Contract code  
+export PATH="$HOME/.cargo/bin:$PATH"                                                            # (optional) add the Cargo Rust dir to path
 ./build.sh                                                                                      # compile the Smart Contract
 
 cd ..                                                                                           # exit Smart Contract directory
