@@ -1,6 +1,10 @@
 
 # :spades: :spades: :spades:  Play Crossword Puzzles on NEAR Protocol
-![NEAR Login](https://github.com/irene-bbox/sc-near-crossword/blob/master/public/near_white.png)
+<p align="center">
+  <a href="https://near.org/">
+    <img alt="Near" src="https://github.com/irene-bbox/sc-near-crossword/blob/master/public/near_white.png" width="250" />
+  </a>
+</p>
 
 ---
 
@@ -25,6 +29,7 @@ Open [http://localhost:1234](http://localhost:1234) to view it in the browser.
 
 Create a [NEAR wallet](https://wallet.testnet.near.org/) on testnet.\
 Log into your NEAR wallet from the browser where you launched the crossword puzzle. :satellite: 
+
 ![NEAR Login](https://github.com/irene-bbox/sc-near-crossword/blob/master/public/login.png)
 
 
