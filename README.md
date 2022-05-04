@@ -1,18 +1,20 @@
 <p align="center">
   <a href="https://near.org/">
-    <img alt="Near" src="https://github.com/irene-bbox/sc-near-mintingNFT/images/near_oceanblue.png" 
+    <img alt="Near" src="https://github.com/irene-bbox/sc-near-mintingNFT/blob/1.skeleton/images/near_oceanblue.png" 
     width="250" />
   </a>
 </p>
 
 # Minting an NFT on NEAR Protocol :ringed_planet: :roller_skate: :kick_scooter:
+
 In this guide, you'll learn how to mint an NFT on NEAR Protocol blockchain (testnet) via a Rust Smart Contract. This guide walks you through all steps for quick deployment of the contract, but doesn't walk explain the actual logic of the NFT-minting contract :nerd_face: :shipit: :bowtie:, if you want to learn how to write a smart contract o mint NFTs on near, then follow [this](https://docs.near.org/docs/tutorials/contracts/nfts/introduction) tutorial in the official NEAR documentation. 
+
 ---
 
 
 ## Create testnet account
 
-If you don't own a NEAR wallet yet, create one. Navigate to NEAR testnet [wallet](https://wallet.testnet.near.org) and click on 'Create Account' :handbag:.
+If you don't own a NEAR wallet yet, create one. Navigate to NEAR testnet [wallet](https://wallet.testnet.near.org) and click on 'Create Account'.
 
 
 ## Configure CLI
@@ -32,7 +34,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh              # If
 rustup target add wasm32-unknown-unknown                                    # Add Wasm toolchain
 ```
 
-Some -but not all- Smart Contracts (e.g., SCRT Network, NEAR Protocol, etc.) compile to WebAssembly (Wasm) and that's why we add the toolchain for Rust :sheep:.
+Some -but not all- Smart Contracts (e.g., SCRT Network, NEAR Protocol, etc.) compile to WebAssembly (Wasm) <br /> and that's why we add the toolchain for Rust :sheep:.
 
 ## Prep smart contract
 
@@ -47,34 +49,31 @@ near login
 
 ## Deploy
 
-Follow these steps to deploy a Smart Contract on NEAR:
+Follow these 3 steps to deploy a Smart Contract on NEAR:
 1. :gear: **build** the contract
 2. :clapper: **deploy** the contract
 3. :airplane: **initialize** the contract
 
 Run in terminal,
 ```bash
-export NFT_CONTRACT_ID=accountname.testnet
-echo $NFT_CONTRACT_ID                                                                             # Export path to your testnet account name
+export NFT_CONTRACT_ID=accountname.testnet                                                                                           # Export path to your testnet account name
+echo $NFT_CONTRACT_ID      
 
 yarn build                                                                                        # Build the contract
-
 # now, ensure you are in the root folder and run
 near deploy --wasmFile out/main.wasm $NFT_CONTRACT_ID                                             # Deploy the contract
-
 near call $NFT_CONTRACT_ID new_default_meta '{"owner_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID   # Initialize the contract
-
 near view $NFT_CONTRACT_ID nft_metadata                                                           # Call view functions
-
 near call $NFT_CONTRACT_ID nft_mint '{"token_id": "nft1", "metadata": {"title": "May 4th", "description": "Star Wars pun", "media": "https://www.rd.com/wp-content/uploads/2020/04/GettyImages-1146900170.jpg"}, "receiver_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID --amount 0.1                    # Mint the NFT
 ```
-Congratulations :raised_hands: :tada: :partying_face: ! You've just minted an NFT on NEAR testnet.
-`<accountname.testnet>` is the name of your NEAR testnet account
-`<NFT_CONTRACT_ID>` is a path to a self-defined variable, i.e., your testnet account
+Congratulations :raised_hands: :tada: :partying_face: ! You've just minted an NFT on NEAR testnet. <br />
+> `accountname.testnet` is the name of your NEAR testnet account <br />
+`NFT_CONTRACT_ID` is a path to a self-defined variable, i.e., your testnet account <br />
+field like `token_id`, `title`, `description`, etc. are customizable
 
 ## Interact
 
-You are now ready to interact with the smart contract. Do so, using view calls, which call on a function in the smart contract to return some viewing data.
+You are now ready to interact with the smart contract. Use view calls to call on a function in the smart contract to return some viewing data.
 ```bash
 near view $NFT_CONTRACT_ID nft_token '{"token_id": "nft1"}'                                         # View call 
 ```
