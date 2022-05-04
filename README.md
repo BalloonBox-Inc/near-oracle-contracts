@@ -58,8 +58,7 @@ Run in terminal,
 ```bash
 export NFT_CONTRACT_ID=accountname.testnet                                  # Export path to your testnet account name
 echo $NFT_CONTRACT_ID      
-yarn build
-                                                                  # Build the contract
+yarn build                                                                  # Build the contract
 # now, ensure you are in the root folder and run
 near deploy --wasmFile out/main.wasm $NFT_CONTRACT_ID                       # Deploy the contract
 near call $NFT_CONTRACT_ID new_default_meta '{"owner_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID   # Initialize the contract
@@ -68,12 +67,12 @@ near view $NFT_CONTRACT_ID nft_metadata                                      # C
 ```
 Congratulations :raised_hands: :tada: :partying_face: ! You've just minted an NFT on NEAR testnet. <br />
 > * `accountname.testnet` is the name of your NEAR testnet account <br />
-* `NFT_CONTRACT_ID` is a path to a self-defined variable, i.e., your testnet account <br />
-* fields like `token_id`, `title`, `description`, etc. are customizable
+> * `NFT_CONTRACT_ID` is a path to a self-defined variable, i.e., your testnet account <br />
+> * fields like `token_id`, `title`, `description`, etc. are customizable
 
 ## Interact
 
 You're ready to interact with the smart contract. Use view calls to return viewing data from the smart contract.
 ```bash
-near view $NFT_CONTRACT_ID nft_token '{"token_id": "nft1"}'                                         # View call 
+near view $NFT_CONTRACT_ID nft_token '{"token_id": "nft1"}'                  # View call 
 ```
