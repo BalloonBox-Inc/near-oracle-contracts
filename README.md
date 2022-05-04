@@ -59,6 +59,7 @@ Run in terminal,
 export NFT_CONTRACT_ID=accountname.testnet                                  # Export path to your testnet account name
 echo $NFT_CONTRACT_ID      
 yarn build                                                                  # Build the contract
+
 # now, ensure you are in the root folder and run
 near deploy --wasmFile out/main.wasm $NFT_CONTRACT_ID                       # Deploy the contract
 near call $NFT_CONTRACT_ID new_default_meta '{"owner_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID   # Initialize the contract
