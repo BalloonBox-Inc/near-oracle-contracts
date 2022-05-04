@@ -8,6 +8,7 @@ use near_sdk::{
 use std::collections::HashMap;
 
 pub use crate::approval::*;
+pub use crate::internal::*;
 pub use crate::metadata::*;
 pub use crate::mint::*;
 pub use crate::nft_core::*;
@@ -15,6 +16,7 @@ pub use crate::royalty::*;
 
 mod approval;
 mod enumeration;
+mod internal;
 mod metadata;
 mod mint;
 mod nft_core;
@@ -24,7 +26,7 @@ mod royalty;
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Contract {
     // contract owner
-    pub ower_id: AccountId,
+    pub owner_id: AccountId,
 
     // token IDs for a given account
     pub tokens_per_owner: LookupMap<AccountId, UnorderedSet<TokenId>>,
@@ -72,10 +74,10 @@ impl Contract {
             owner_id,
             NFTContractMetadata {
                 spec: "nft-1.0.0".to_string(),
-                name: "Tutorial to mint NFTs on NEAR",
+                name: "Tutorial to mint NFTs on NEAR".to_string(),
                 symbol: "Balloonbox".to_string(),
                 icon: None,
-                base_url: None,
+                base_uri: None,
                 reference: None,
                 reference_hash: None,
             },

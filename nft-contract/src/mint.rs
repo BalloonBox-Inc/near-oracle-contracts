@@ -3,12 +3,7 @@ use crate::*;
 #[near_bindgen]
 impl Contract {
     #[payable]
-    pub fn nft_mint(
-        &mut self,
-        token_id: Option<TokenId>,
-        metadata: TokenMetadata,
-        receiver_id: Option<AccountId>,
-    ) {
+    pub fn nft_mint(&mut self, token_id: TokenId, metadata: TokenMetadata, receiver_id: AccountId) {
         // measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 
@@ -29,7 +24,7 @@ impl Contract {
         // insert token id and metadata
         self.token_metadata_by_id.insert(&token_id, &metadata);
 
-        //call an internal method to add a oken tothe owner
+        //call an internal method to add a token to the owner
         self.internal_add_token_to_owner(&token.owner_id, &token_id);
 
         //calculate the required storage = used storage - initial storage
