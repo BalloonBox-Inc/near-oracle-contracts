@@ -71,6 +71,18 @@ Congratulations :raised_hands: :tada: :partying_face: ! You've just minted an NF
 > * `NFT_CONTRACT_ID` is a path to a self-defined variable, i.e., your testnet account <br />
 > * fields like `token_id`, `title`, `description`, etc. are customizable
 
+
+## Redeploy (patch fixes)
+
+Imagine you have an already-deployed smart contract. Assume you want to upgrade/change/add functionalities to such contract by altering its Rust code. The correct way to do so is by using *deployment patch fixes* (see official doc [here](https://docs.near.org/docs/tutorials/contracts/nfts/upgrade-contract)), namely code patches to a contract that had been previously deployed. To upgrade a contract follow the next steps:
+
+* change the current code to add the desired functionality
+* run in terminal from the root directory `yarn build && near deploy --wasmFile out/main.wasm --accountId $NFT_CONTRACT_ID`
+* this outputs warning saying the account has a deployed contract and will ask if you'd like to proceed. Simply type `y` and hit enter
+* once the contract is redeployed, test that the state migrated correctly by running a simple a *view* function of your choice, e.g., `near view $NFT_CONTRACT_ID <my_function_name>`
+
+> :lightbulb: :warning: Patch fixes on NEAR require you to run the *yarn build && near deploy* commands **simultaneously**. If you try to execute these commands *consecutively* the operation will fail because the initial contract had already been deployed and the NEAR Runtime doesn't understand what to do with this contradictory request to deploy an already-deployed contract.  
+
 ## Interact
 
 You're ready to interact with the smart contract. Use view calls to return viewing data from the smart contract.
