@@ -64,7 +64,7 @@ yarn build                                                                  # Bu
 near deploy --wasmFile out/main.wasm $NFT_CONTRACT_ID                       # Deploy the contract
 near call $NFT_CONTRACT_ID new_default_meta '{"owner_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID   # Initialize the contract
 near call $NFT_CONTRACT_ID nft_mint '{"token_id": "nft1", "metadata": {"title": "May 4th", "description": "Star Wars pun", "media": "https://www.rd.com/wp-content/uploads/2020/04/GettyImages-1146900170.jpg"}, "receiver_id": "'$NFT_CONTRACT_ID'"}' --accountId $NFT_CONTRACT_ID --amount 0.1    # Mint the NFT
-near view $NFT_CONTRACT_ID nft_metadata                                      # Call view functions
+near view $NFT_CONTRACT_ID nft_metadata                                     # Call view functions
 ```
 Congratulations :raised_hands: :tada: :partying_face: ! You've just minted an NFT on NEAR testnet. <br />
 > * `accountname.testnet` is the name of your NEAR testnet account <br />
@@ -76,14 +76,14 @@ Congratulations :raised_hands: :tada: :partying_face: ! You've just minted an NF
 
 Imagine you have an already-deployed smart contract. Assume you want to upgrade/change/add functionalities to such contract by altering its Rust code. The correct way to do so is by using *deployment patch fixes* (see official doc [here](https://docs.near.org/docs/tutorials/contracts/nfts/upgrade-contract)), namely code patches to a contract that had been previously deployed. To upgrade a contract follow the next steps:
 
-1. change the current code to add the desired functionality
-2. run in terminal from the root directory 
+* change the current code to add the desired functionality
+* run in terminal from the root directory 
    
    ```bash
    yarn build && near deploy --wasmFile out/main.wasm --accountId $NFT_CONTRACT_ID
    ```
-3. this outputs warning saying the account has a deployed contract and will ask if you'd like to proceed. Simply type `y` and hit enter
-4. once the contract is redeployed, test that the state migrated correctly by running a simple a *view* function of your choice, e.g., `near view $NFT_CONTRACT_ID <my_function_name>`
+* this outputs a warning and will ask if you'd like to proceed. Simply type `y` and hit enter
+* once the contract is redeployed, test that the state migrated correctly by running a simple a *view* function of your choice, e.g., `near view $NFT_CONTRACT_ID <my_function_name>`
 
 > :no_entry: :radioactive: :warning: Patch fixes on NEAR require you to run the *yarn build && near deploy* commands **simultaneously**. If you try to execute these commands *consecutively* the operation will fail because the initial contract had already been deployed and the NEAR Runtime doesn't understand what to do with this contradictory request to deploy an already-deployed contract.  
 
