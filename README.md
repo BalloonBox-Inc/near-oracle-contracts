@@ -2,7 +2,7 @@
 # :spades: :spades: :spades:  Play Crossword Puzzles on NEAR Protocol
 <p align="center">
   <a href="https://near.org/">
-    <img alt="Near" src="https://github.com/irene-bbox/sc-near-crossword/blob/master/public/near_white.png" width="250" />
+    <img alt="Near" src="https://github.com/irene-bbox/sc-near-crossword/blob/master/public/near_purple.png" width="250" />
   </a>
 </p>
 
