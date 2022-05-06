@@ -1,8 +1,8 @@
 
-# :spades: :spades: :spades:  Play Crossword Puzzles on NEAR Protocol
+# :spades: :spades: :spades: NEAR Oracle Contract
 <p align="center">
   <a href="https://near.org/">
-    <img alt="Near" src="https://github.com/irene-bbox/NEARoracle-Contract/images/near_white.png" width="1000" />
+    <img alt="Near" src="https://github.com/BalloonBox-Inc/NEARoracle-Contract/tree/main/images" width="1000" />
   </a>
 </p>
 
