@@ -2,7 +2,7 @@
 # :fire: NEAR Oracle Contract 
 <p align="center">
   <a href="https://near.org/">
-    <img alt="Near" src="https://github.com/BalloonBox-Inc/NEARoracle-Contract/blob/main/images/near_white.png" width="1000" />
+    <img alt="Near" src="https://github.com/BalloonBox-Inc/NEARoracle-Contract/blob/main/images/near_white.png" width="700" />
   </a>
 </p>
 
