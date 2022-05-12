@@ -1,5 +1,9 @@
 // Import crates
-use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
+// use near_sdk::collections::{LookupSet, Vector};
+use near_sdk::{
+    borsh::{self, BorshDeserialize, BorshSerialize},
+    serde::Serialize,
+};
 use near_sdk::{env, near_bindgen};
 
 // --------------------------------------------------------------------- //
@@ -17,6 +21,12 @@ pub struct State {
     pub size_now: u64,
     pub user_count: u64,
     pub score_count: u64,
+}
+
+#[derive(Serialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct ContractState {
+    state_now: Vec<u64>,
 }
 
 // --------------------------------------------------------------------- //
@@ -42,14 +52,23 @@ impl State {
     }
 
     // update the state of the contract
-    pub fn set_state(&mut self, max_size: u64, score_count: u64) {
-        self.max_size = max_size;
+    pub fn set_state(&mut self) {
+        // max_size remains equal to its initialization value
         self.size_now = env::storage_usage();
-        self.user_count = USER_NUMBER + 100;
-        self.score_count = score_count;
+        self.user_count += 1;
+        self.score_count += 1;
     }
 
-    pub fn get_state(&self) -> String {
-        return String::from("active state");
+    pub fn get_state(&self) -> u64 {
+        return self.size_now;
+    }
+
+    pub fn read_state(&self) -> ContractState {
+        let mut info = vec![];
+        info.push(self.max_size);
+        info.push(self.size_now);
+        info.push(self.user_count);
+        info.push(self.score_count);
+        ContractState { state_now: info }
     }
 }
