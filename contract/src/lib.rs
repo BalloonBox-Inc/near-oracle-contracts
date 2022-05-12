@@ -7,27 +7,16 @@ use near_sdk::{env, near_bindgen};
 //                                                                       //
 // ----------------------------------------------------------------------//
 
-const USER_NUMBER: u64 = 2;
+const USER_NUMBER: u64 = 7;
 
 // struct on the current state of the smart contract
 #[near_bindgen]
-#[derive(BorshDeserialize, BorshSerialize)]
+#[derive(Default, BorshDeserialize, BorshSerialize)]
 pub struct State {
     pub max_size: u64,
     pub size_now: u64,
     pub user_count: u64,
     pub score_count: u64,
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self {
-            max_size: 3000,
-            size_now: env::storage_usage(),
-            user_count: USER_NUMBER,
-            score_count: 5,
-        }
-    }
 }
 
 // --------------------------------------------------------------------- //
@@ -36,6 +25,17 @@ impl Default for State {
 // ----------------------------------------------------------------------//
 #[near_bindgen]
 impl State {
+    // initialize the contract
+    #[init]
+    pub fn new() -> Self {
+        Self {
+            max_size: 1000000,
+            size_now: env::storage_usage(),
+            user_count: 0,
+            score_count: 0,
+        }
+    }
+
     // read the number of user
     pub fn get_user_number(&self) -> u64 {
         self.user_count
