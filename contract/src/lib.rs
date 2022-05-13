@@ -12,7 +12,8 @@ use near_sdk::{env, near_bindgen};
 //                                                                       //
 // ----------------------------------------------------------------------//
 
-const USER_NUMBER: u64 = 7;
+const USER_COUNT: u64 = 0;
+const SCORE_COUNT: u64 = 0;
 
 // on-chain struct describing the current state of the smart contract
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -44,12 +45,6 @@ pub struct Score {
     pub timestamp: u32,
     pub description: u32,
 }
-
-// // a scoreboard struct containing all scores for one user
-// #[derive(BorshDeserialize, BorshSerialize)]
-// pub struct ScoreBoard {
-//     scores_by_user: LookupSet<Score>,
-// }
 
 // singleton and main struct for this smart contract
 #[near_bindgen]
@@ -85,6 +80,7 @@ impl Contract {
         }
     }
 
+    // store a new score to blockchain
     pub fn store_score(&mut self, score: u16, timestamp: u32, description: u32) {
         let account_id = String::from(env::predecessor_account_id());
         let new_score = Score {
@@ -92,12 +88,21 @@ impl Contract {
             timestamp: timestamp,
             description: description,
         };
-        let mut x = LookupSet::new(b"c");
-        x.insert(&new_score);
-        // let y = ScoreBoard { scores_by_user: x };
-        self.records.insert(&account_id, &x);
+
+        if self.records.get(&account_id).is_none() {
+            let mut x = LookupSet::new(b"c");
+            x.insert(&new_score);
+            self.records.insert(&account_id, &x);
+            USER_COUNT += 1;
+        } else {
+            let mut x = self.records.get(&account_id);
+            x.insert(&new_score);
+        }
+
+        SCORE_COUNT += 1;
     }
 
+    // query all score history for a specified user
     pub fn query_all_scores(&self, account_id: String) -> MyScoreHistory {
         let all_scores = self.records.get(&account_id);
         // implement logic in case the above Option<T> returns a NoneType
@@ -105,15 +110,13 @@ impl Contract {
         MyScoreHistory { scores: read_score }
     }
 
-    // pub fn query_all_scores(&self, account_id: String) -> Option<ScoreBoard> {
-    //     return self.records.get(&account_id);
-    // }
+    // read the number of users and scores
+    pub fn get_stats(&self) -> Vec<u64> {
+        let mut stats: Vec<u64> = vec![USER_COUNT, SCORE_COUNT];
+        stats
+    }
 
-    // // read the number of user
-    // pub fn get_user_number(&self) -> u64 {
-    //     self.user_count
-    // }
-
+    // STATE
     // // update the state of the contract
     // pub fn set_state(&mut self) {
     //     // max_size remains equal to its initialization value
