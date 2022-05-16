@@ -25,3 +25,8 @@ Then, add the `wasm32-unknown-unknown` toolchain. This toolchain is required bec
 ```bash
 rustup target add wasm32-unknown-unknown
 ```
+ 
+
+#### Debugging 
+###### Compile time errors
+You must compile the smart contract before deploying in to blockchain. Compile the contract running the terminal command `./build.sh`. If compilation returns an error *unable to get packages from source* you might need to clear the cargo registry running `rm -rf /Users/irenefabris/.cargo/registry/`.
