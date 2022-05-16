@@ -95,17 +95,25 @@ impl Contract {
             description: description,
         };
 
-        if self.records.contains_key(&account_id) {
-            ();
-            // self.records.get(&account_id).insert(&new_score);
+        if MAX_SIZE < env::storage_usage() {
+            let mappy = self.records.get(&account_id);
+            match mappy {
+                None => {
+                    let mut y = LookupSet::new(b"c");
+                    y.insert(&new_score);
+                    self.records.insert(&account_id, &y);
+                    // USER_COUNT += 1;
+                }
+                _ => {
+                    // pass as temporary solution
+                    // let mut x = Some.insert(&new_score);
+                    // self.records.insert(&account_id, &x);
+                }
+            }
+            // SCORE_COUNT += 1  // update the score count iff you succeeded writing it to chain
         } else {
-            let mut x = LookupSet::new(b"c");
-            x.insert(&new_score);
-            self.records.insert(&account_id, &x);
-            // USER_COUNT += 1;
+            env::panic_str("ERR_MAXED_OUT_MEMORY")
         }
-
-        // SCORE_COUNT += 1;
     }
 
     // query all score history for a specified user
@@ -118,7 +126,7 @@ impl Contract {
 
     // read the number of users and scores
     pub fn get_stats(&self) -> Vec<u64> {
-        let mut stats: Vec<u64> = vec![USER_COUNT, SCORE_COUNT];
+        let stats: Vec<u64> = vec![USER_COUNT, SCORE_COUNT];
         stats
     }
 
