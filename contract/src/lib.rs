@@ -12,8 +12,9 @@ use near_sdk::{env, near_bindgen};
 //                                                                       //
 // ----------------------------------------------------------------------//
 
-const USER_COUNT: u64 = 0;
-const SCORE_COUNT: u64 = 0;
+static USER_COUNT: u64 = 0;
+static SCORE_COUNT: u64 = 0;
+const MAX_SIZE: u64 = 5000000;
 
 // on-chain struct describing the current state of the smart contract
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -43,7 +44,7 @@ pub struct MyScoreHistory {
 pub struct Score {
     pub score: u16,
     pub timestamp: u32,
-    pub description: u32,
+    pub description: Vec<u8>,
 }
 
 // singleton and main struct for this smart contract
@@ -80,8 +81,13 @@ impl Contract {
         }
     }
 
+    // query total number of scores stored on chain
+    pub fn get_max_size(&self) -> u64 {
+        return MAX_SIZE;
+    }
+
     // store a new score to blockchain
-    pub fn store_score(&mut self, score: u16, timestamp: u32, description: u32) {
+    pub fn store_score(&mut self, score: u16, timestamp: u32, description: Vec<u8>) {
         let account_id = String::from(env::predecessor_account_id());
         let new_score = Score {
             score: score,
@@ -89,17 +95,17 @@ impl Contract {
             description: description,
         };
 
-        if self.records.get(&account_id).is_none() {
+        if self.records.contains_key(&account_id) {
+            ();
+            // self.records.get(&account_id).insert(&new_score);
+        } else {
             let mut x = LookupSet::new(b"c");
             x.insert(&new_score);
             self.records.insert(&account_id, &x);
-            USER_COUNT += 1;
-        } else {
-            let mut x = self.records.get(&account_id);
-            x.insert(&new_score);
+            // USER_COUNT += 1;
         }
 
-        SCORE_COUNT += 1;
+        // SCORE_COUNT += 1;
     }
 
     // query all score history for a specified user
@@ -116,7 +122,7 @@ impl Contract {
         stats
     }
 
-    // STATE
+    // // STATE
     // // update the state of the contract
     // pub fn set_state(&mut self) {
     //     // max_size remains equal to its initialization value
