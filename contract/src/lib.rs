@@ -35,7 +35,7 @@ pub struct ContractState {
 #[derive(Serialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct MyScoreHistory {
-    scores: Vec<u8>,
+    scores: Vec<Score>,
 }
 
 // user's score, timestamp, and score descriptor as a struct
@@ -81,13 +81,11 @@ impl Contract {
         }
     }
 
-    // query total number of scores stored on chain
-    pub fn get_max_size(&self) -> u64 {
-        return MAX_SIZE;
-    }
-
+    // -----------------------------------------------------//
+    //              Score-related implementations           //
+    // -----------------------------------------------------//
     // store a new score to blockchain
-    pub fn store_score(&mut self, score: u16, timestamp: u32, description: Vec<u8>) {
+    pub fn store_score(&mut self, score: u16, timestamp: u32, description: Vec<u8>) -> String {
         let account_id = String::from(env::predecessor_account_id());
         let new_score = Score {
             score: score,
@@ -120,26 +118,44 @@ impl Contract {
         } else {
             env::panic_str("ERR_MAXED_OUT_MEMORY")
         }
+        // return the account name. This name is the dictionary key to access user's scores
+        // iff you successfully stored the score to blockchain, then return the key to access such scores
+        return account_id;
     }
 
     // query latest score for a specified user
     pub fn query_latest_score(&self, account_id: String) -> Score {
-        let all_scores = self.records.get(&account_id);
-        match all_scores {
-            None => env::panic_str("ERR_THIS_USER_HAS_NO_SCORE_RECORD"),
-            Some(i) => match i.get(u64::MAX) {
-                None => env::panic_str("ERR_THIS_USER_HAS_EMPTY_SCORE_RECORD"),
+        if let Some(i) = self.records.get(&account_id) {
+            let indx = i.len() - 1;
+            match i.get(indx) {
+                None => env::panic_str("ERR_THIS_USER_HAS_AN_EMPTY_SCORE_RECORD"),
                 Some(j) => return j,
-            },
+            }
+        } else {
+            // panic when the account_id has no scores associated to it
+            env::panic_str("ERR_NO_RECORD_FOR_THIS_USER")
         }
     }
 
     // query all score history for a specified user
     pub fn query_all_scores(&self, account_id: String) -> MyScoreHistory {
-        let all_scores = self.records.get(&account_id);
-        // implement logic in case the above Option<T> returns a NoneType
-        let read_score = all_scores.try_to_vec().unwrap();
-        MyScoreHistory { scores: read_score }
+        if let Some(i) = self.records.get(&account_id) {
+            let read_scores = i.to_vec();
+            MyScoreHistory {
+                scores: read_scores,
+            }
+        } else {
+            // implement logic in case the above Option<T> returns a NoneType
+            env::panic_str("ERR_THIS_USER_HAS_NO_SCORE_HISTORY")
+        }
+    }
+
+    // -----------------------------------------------------//
+    //              State-related implementations           //
+    // -----------------------------------------------------//
+    // query total number of scores stored on chain
+    pub fn get_max_size(&self) -> u64 {
+        return MAX_SIZE;
     }
 
     // read the number of users and scores
