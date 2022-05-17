@@ -20,7 +20,6 @@ const MAX_SIZE: u64 = 5000000000000;
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct State {
     pub max_size: u64,
-    pub size_now: u64,
     pub user_count: u64,
     pub score_count: u64,
 }
@@ -29,7 +28,10 @@ pub struct State {
 #[derive(Serialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct ContractState {
-    state_now: Vec<u64>,
+    max_size: u64,
+    size_now: u64,
+    user_count: u64,
+    score_count: u64,
 }
 
 #[derive(Serialize)]
@@ -53,22 +55,22 @@ pub struct Score {
 pub struct Contract {
     owner_id: AccountId,
     records: LookupMap<String, Vector<Score>>,
+    contract_state: State,
 }
 
 // --------------------------------------------------------------------- //
 //                        Implement main objects                         //
 //                                                                       //
 // ----------------------------------------------------------------------//
-impl Default for State {
-    fn default() -> Self {
-        Self {
-            max_size: 1000000,
-            size_now: env::storage_usage(),
-            user_count: 0,
-            score_count: 0,
-        }
-    }
-}
+// impl Default for State {
+//     fn default() -> Self {
+//         Self {
+//             max_size: 5000000,
+//             user_count: 0,
+//             score_count: 0,
+//         }
+//     }
+// }
 
 #[near_bindgen]
 impl Contract {
@@ -78,6 +80,11 @@ impl Contract {
         Self {
             owner_id,
             records: LookupMap::new(b"s"),
+            contract_state: State {
+                max_size: 5000000,
+                user_count: 0,
+                score_count: 0,
+            },
         }
     }
 
@@ -93,7 +100,7 @@ impl Contract {
             description: description,
         };
 
-        if env::storage_usage() < MAX_SIZE {
+        if env::storage_usage() < self.contract_state.max_size {
             let mappy = self.records.get(&account_id);
             match mappy {
                 // if it's a new user --> create a brand new vector to store their score
@@ -101,7 +108,7 @@ impl Contract {
                     let mut x = Vector::new(b"v");
                     x.push(&new_score);
                     self.records.insert(&account_id, &x);
-                    // USER_COUNT += 1;
+                    self.contract_state.user_count += 1;
                 }
                 // if it's a returning user --> append new score to existing vector
                 Some(i) => {
@@ -114,7 +121,7 @@ impl Contract {
                     }
                 }
             }
-            // SCORE_COUNT += 1  // update the score count iff you succeeded writing it to chain
+            self.contract_state.score_count += 1 // update the score count iff you succeeded writing it to chain
         } else {
             env::panic_str("ERR_MAXED_OUT_MEMORY")
         }
@@ -164,25 +171,23 @@ impl Contract {
         stats
     }
 
-    // // STATE
-    // // update the state of the contract
-    // pub fn set_state(&mut self) {
-    //     // max_size remains equal to its initialization value
-    //     self::size_now = env::storage_usage();
-    //     self.user_count += 1;
-    //     self.score_count += 1;
-    // }
+    pub fn get_score_count(&self) -> u64 {
+        return self.contract_state.score_count;
+    }
 
-    // pub fn get_state(&self) -> u64 {
-    //     return self.size_now;
-    // }
+    // update the state of the contract
+    pub fn set_state(&mut self) {
+        // max_size remains equal to its initialization value
+        self.contract_state.user_count += 5;
+        self.contract_state.score_count += 5;
+    }
 
-    // pub fn read_state(&self) -> ContractState {
-    //     let mut info = vec![];
-    //     info.push(self.max_size);
-    //     info.push(self.size_now);
-    //     info.push(self.user_count);
-    //     info.push(self.score_count);
-    //     ContractState { state_now: info }
-    // }
+    pub fn read_state(&self) -> ContractState {
+        ContractState {
+            max_size: self.contract_state.max_size,
+            size_now: env::storage_usage(),
+            user_count: self.contract_state.user_count,
+            score_count: self.contract_state.score_count,
+        }
+    }
 }
