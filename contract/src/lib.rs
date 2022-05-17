@@ -1,5 +1,5 @@
 // Import crates
-use near_sdk::collections::{LookupMap, LookupSet, Vector};
+use near_sdk::collections::{LookupMap, Vector};
 use near_sdk::{
     borsh::{self, BorshDeserialize, BorshSerialize},
     serde::{Deserialize, Serialize},
@@ -14,7 +14,7 @@ use near_sdk::{env, near_bindgen};
 
 static USER_COUNT: u64 = 0;
 static SCORE_COUNT: u64 = 0;
-const MAX_SIZE: u64 = 5000000;
+const MAX_SIZE: u64 = 5000000000000;
 
 // on-chain struct describing the current state of the smart contract
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -52,7 +52,7 @@ pub struct Score {
 #[derive(PanicOnDefault, BorshDeserialize, BorshSerialize)]
 pub struct Contract {
     owner_id: AccountId,
-    records: LookupMap<String, LookupSet<Score>>,
+    records: LookupMap<String, Vector<Score>>,
 }
 
 // --------------------------------------------------------------------- //
@@ -95,24 +95,42 @@ impl Contract {
             description: description,
         };
 
-        if MAX_SIZE < env::storage_usage() {
+        if env::storage_usage() < MAX_SIZE {
             let mappy = self.records.get(&account_id);
             match mappy {
+                // if it's a new user --> create a brand new vector to store their score
                 None => {
-                    let mut y = LookupSet::new(b"c");
-                    y.insert(&new_score);
-                    self.records.insert(&account_id, &y);
+                    let mut x = Vector::new(b"v");
+                    x.push(&new_score);
+                    self.records.insert(&account_id, &x);
                     // USER_COUNT += 1;
                 }
-                _ => {
-                    // pass as temporary solution
-                    // let mut x = Some.insert(&new_score);
-                    // self.records.insert(&account_id, &x);
+                // if it's a returning user --> append new score to existing vector
+                Some(i) => {
+                    if i.len() < 10 {
+                        let mut y = i;
+                        y.push(&new_score);
+                        self.records.insert(&account_id, &y);
+                    } else {
+                        env::panic_str("ERR_EXCEEDED_TEN_SCORES_UPPERBOUND")
+                    }
                 }
             }
             // SCORE_COUNT += 1  // update the score count iff you succeeded writing it to chain
         } else {
             env::panic_str("ERR_MAXED_OUT_MEMORY")
+        }
+    }
+
+    // query latest score for a specified user
+    pub fn query_latest_score(&self, account_id: String) -> Score {
+        let all_scores = self.records.get(&account_id);
+        match all_scores {
+            None => env::panic_str("ERR_THIS_USER_HAS_NO_SCORE_RECORD"),
+            Some(i) => match i.get(u64::MAX) {
+                None => env::panic_str("ERR_THIS_USER_HAS_EMPTY_SCORE_RECORD"),
+                Some(j) => return j,
+            },
         }
     }
 
