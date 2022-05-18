@@ -25,5 +25,6 @@ yarn-error.log*
 # Rust smart contract
 contract/target
 
-# Rust files
+# Rust files and Python files
 playground.rs
+*.ipynb

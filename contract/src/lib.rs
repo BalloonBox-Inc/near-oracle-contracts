@@ -12,9 +12,9 @@ use near_sdk::{env, near_bindgen};
 //                                                                       //
 // ----------------------------------------------------------------------//
 
-static USER_COUNT: u64 = 0;
-static SCORE_COUNT: u64 = 0;
-const MAX_SIZE: u64 = 5000000000000;
+// static USER_COUNT: u64 = 0;
+// static SCORE_COUNT: u64 = 0;
+// const MAX_SIZE: u64 = 5000000000000;
 
 // on-chain struct describing the current state of the smart contract
 #[derive(BorshDeserialize, BorshSerialize)]
@@ -24,10 +24,12 @@ pub struct State {
     pub score_count: u64,
 }
 
-// off-chain Vec<u64> returning the contract state in a human-readable format
+// off-chain struct returning the contract state in a human-readable format
 #[derive(Serialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct ContractState {
+    owner: String,
+    timestamp: u64,
     max_size: u64,
     size_now: u64,
     user_count: u64,
@@ -45,7 +47,7 @@ pub struct MyScoreHistory {
 #[serde(crate = "near_sdk::serde")]
 pub struct Score {
     pub score: u16,
-    pub timestamp: u32,
+    pub timestamp: u64,
     pub description: Vec<u8>,
 }
 
@@ -62,15 +64,6 @@ pub struct Contract {
 //                        Implement main objects                         //
 //                                                                       //
 // ----------------------------------------------------------------------//
-// impl Default for State {
-//     fn default() -> Self {
-//         Self {
-//             max_size: 5000000,
-//             user_count: 0,
-//             score_count: 0,
-//         }
-//     }
-// }
 
 #[near_bindgen]
 impl Contract {
@@ -82,8 +75,8 @@ impl Contract {
             records: LookupMap::new(b"s"),
             contract_state: State {
                 max_size: 5000000,
-                user_count: 0,
-                score_count: 0,
+                user_count: 0u64,
+                score_count: 0u64,
             },
         }
     }
@@ -92,36 +85,52 @@ impl Contract {
     //              Score-related implementations           //
     // -----------------------------------------------------//
     // store a new score to blockchain
-    pub fn store_score(&mut self, score: u16, timestamp: u32, description: Vec<u8>) -> String {
+    pub fn store_score(&mut self, score: u16, description: String) -> String {
         let account_id = String::from(env::predecessor_account_id());
         let new_score = Score {
             score: score,
-            timestamp: timestamp,
-            description: description,
+            timestamp: env::block_timestamp(),
+            description: env::sha256(description.as_bytes()),
         };
 
+        // store score iff contract hasn't maxed out its memory upper bound
         if env::storage_usage() < self.contract_state.max_size {
             let mappy = self.records.get(&account_id);
+
             match mappy {
                 // if it's a new user --> create a brand new vector to store their score
                 None => {
                     let mut x = Vector::new(b"v");
                     x.push(&new_score);
-                    self.records.insert(&account_id, &x);
-                    self.contract_state.user_count += 1;
+                    // update the score count iff you succeeded writing it to chain`
+                    if let Some(_k) = self.records.insert(&account_id, &x) {
+                        self.contract_state.user_count += 1;
+                        self.contract_state.score_count += 1;
+                    };
                 }
+
                 // if it's a returning user --> append new score to existing vector
                 Some(i) => {
-                    if i.len() < 10 {
-                        let mut y = i;
-                        y.push(&new_score);
-                        self.records.insert(&account_id, &y);
-                    } else {
-                        env::panic_str("ERR_EXCEEDED_TEN_SCORES_UPPERBOUND")
+                    let indx = i.len() - 1;
+                    if let Some(j) = i.get(indx) {
+                        let timelapsed = new_score.timestamp - j.timestamp;
+                        // if statement w/ 2 conditions: iff there's less than 10 scores, iff last score is 30+ days old
+                        if i.len() < 10 && timelapsed > 30 * u64::pow(10, 9) {
+                            // 2592 * u64::pow(10, 12) {  // 30 days
+                            let mut y = i;
+                            y.push(&new_score);
+                            // update the score count iff you succeeded writing it to chain
+                            if let Some(_k) = self.records.insert(&account_id, &y) {
+                                self.contract_state.score_count += 1;
+                            };
+                        } else {
+                            env::panic_str(
+                                "ERR_EXCEEDED_TEN_SCORES_UPPERBOUND_OR_LATEST_SCORE_IS_TOO_RECENT",
+                            )
+                        }
                     }
                 }
             }
-            self.contract_state.score_count += 1 // update the score count iff you succeeded writing it to chain
         } else {
             env::panic_str("ERR_MAXED_OUT_MEMORY")
         }
@@ -160,34 +169,20 @@ impl Contract {
     // -----------------------------------------------------//
     //              State-related implementations           //
     // -----------------------------------------------------//
-    // query total number of scores stored on chain
-    pub fn get_max_size(&self) -> u64 {
-        return MAX_SIZE;
-    }
-
-    // read the number of users and scores
-    pub fn get_stats(&self) -> Vec<u64> {
-        let stats: Vec<u64> = vec![USER_COUNT, SCORE_COUNT];
-        stats
-    }
-
-    pub fn get_score_count(&self) -> u64 {
-        return self.contract_state.score_count;
-    }
-
-    // update the state of the contract
-    pub fn set_state(&mut self) {
-        // max_size remains equal to its initialization value
-        self.contract_state.user_count += 5;
-        self.contract_state.score_count += 5;
-    }
 
     pub fn read_state(&self) -> ContractState {
         ContractState {
+            owner: String::from(env::current_account_id()),
+            timestamp: env::block_timestamp(),
             max_size: self.contract_state.max_size,
             size_now: env::storage_usage(),
             user_count: self.contract_state.user_count,
             score_count: self.contract_state.score_count,
         }
+    }
+
+    // query total number of scores stored on chain - for testing only
+    pub fn get_score_count(&self) -> u64 {
+        return self.contract_state.score_count;
     }
 }
