@@ -35,3 +35,10 @@ You must compile the smart contract before deploying in to blockchain. Compile t
 #### Navigating `near_sdk` Persistent Collections
 
 > Note to all NEAR Rust developers: remember to choose your Rust objects based ont heir associated time complexity. Consult [this](https://docs.near.org/docs/concepts/data-storage#big-o-notation-1) table ranking object types in the `near_sdk' Rust collection by Big-O Notation.
+
+#### Testing
+
+```bash
+cargo test -- --nocapture
+cargo test --package near_oracle --  --nocapture              # Note: 'near_oracle' comes from Cargo.toml's 'name' key
+```
