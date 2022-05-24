@@ -109,16 +109,20 @@ impl Contract {
             description: env::sha256(description.as_bytes()),
         };
 
+        let mut success = false;
         let mappy = self.records.get(&account_id);
         match mappy {
             // if it's a new user --> create a brand new vector to store their score
             None => {
                 let mut x = Vector::new(b"v");
                 x.push(&new_score);
-                // update the score count iff you succeeded writing it to chain`
+                // update the score count iff you succeeded writing it to blockchain`
                 self.records.insert(&account_id, &x);
-                self.contract_state.user_count += 1;
-                self.contract_state.score_count += 1;
+                if self.records.insert(&account_id, &x).is_some() {
+                    self.contract_state.user_count += 1;
+                    self.contract_state.score_count += 1;
+                    success = true;
+                }
             }
 
             // if it's a returning user --> append new score to existing vector
@@ -134,7 +138,10 @@ impl Contract {
                         y.push(&new_score);
                         // update the score count iff you succeeded writing it to chain
                         self.records.insert(&account_id, &y);
-                        self.contract_state.score_count += 1;
+                        if self.records.insert(&account_id, &y).is_some() {
+                            self.contract_state.score_count += 1;
+                            success = true;
+                        }
                     } else {
                         env::panic_str(
                             "ERR_EXCEEDED_TEN_SCORES_UPPERBOUND_OR_LATEST_SCORE_IS_TOO_RECENT",
@@ -143,17 +150,17 @@ impl Contract {
                 }
             }
         }
-        // return the account name. This name is the dictionary key to access user's scores
-        // iff you successfully stored the score to blockchain, then return the key to access such scores
+        // return an outcome struct describing whether the
+        // operation of storing a score to blockchainw as successful
         PublishingOutcome {
             gas_used: env::used_gas(),
             score_owner: account_id,
-            successful_operation: true,
+            successful_operation: success,
         }
     }
 
     // query all score history for a specified user
-    pub fn query_all_scores(&self, account_id: String) -> MyScoreHistory {
+    pub fn query_score_history(&self, account_id: String) -> MyScoreHistory {
         if let Some(i) = self.records.get(&account_id) {
             let read_scores = i.to_vec();
             return MyScoreHistory {
@@ -269,6 +276,7 @@ mod tests {
         // store first score
         let msg1 = "Congrats, your score is 570 points".to_string();
         let acc1 = contract.store_score(570, msg1);
+        // assert_eq!(yoda().to_string(), acc1);
         assert_eq!(1, contract.get_score_count());
         let state1 = contract.read_state();
         assert_eq!(1, state1.user_count, "ERR: should be 1 user");
@@ -298,6 +306,18 @@ mod tests {
         contract.store_score(312, "Score of 312".to_string());
         contract.store_score(345, "Score of 345".to_string());
         contract.store_score(378, msg3.to_string());
+
+        // // ensure query_score_history() fn actually returns ALL the scores that got stored on blockchain
+        // let score_history = contract.query_score_history("spensa.testnet".to_string());
+
+        // // ensure message got sha256 encrypted
+        // let last_score = contract.query_latest_score("spensa.testnet".to_string());
+        // assert_eq!(378, last_score.score);
+        // let msg3_sha = env::sha256(msg3.as_bytes());
+        // assert_eq!(
+        //     msg3_sha, last_score.description,
+        //     "ERR: incorrect sha256 encryption of score descriptions"
+        // );
     }
 
     fn read_only() {
