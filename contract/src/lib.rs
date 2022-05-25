@@ -86,7 +86,7 @@ impl Contract {
     #[init]
     pub fn new(owner_id: AccountId) -> Self {
         // ensure that state doesn't exist.
-        // You should NOT initialize a contract if it's state exists already
+        // You should NOT initialize a contract if its state exists already
         assert!(
             !env::state_exists(),
             "ERR_THE_CONTRACT_IS_ALREADY_INITIALIZED"
@@ -197,12 +197,7 @@ impl Contract {
         }
     }
 
-    // query total number of scores stored on chain - for testing only
-    pub fn get_score_count(&self) -> u64 {
-        return self.contract_state.score_count;
-    }
-
-    // check whether a user has a score record
+    // check whether a user has a score record - for testing only (?)
     pub fn user_exist(&self, account_id: String) -> bool {
         return self.records.get(&account_id).is_some();
     }
@@ -222,6 +217,7 @@ mod tests {
     use near_sdk::{testing_env, AccountId, VMContext};
     use std::convert::TryInto;
 
+    // define 3 fake users
     fn spensa() -> AccountId {
         "spensa.testnet".to_string().try_into().unwrap()
     }
@@ -230,16 +226,16 @@ mod tests {
         "doomslug.testnet".to_string().try_into().unwrap()
     }
 
-    fn yoda() -> AccountId {
-        "yoda.testnet".to_string().try_into().unwrap()
+    fn rainbow() -> AccountId {
+        "rainbow.testnet".to_string().try_into().unwrap()
     }
 
     // part of writing unit tests is setting up a mock context
     // provide a `predecessor` here, it'll modify the default context
-    fn get_context(is_view: bool) -> VMContext {
+    fn get_context(is_view: bool, predecessor: AccountId ) -> VMContext {
         VMContextBuilder::new()
-            .signer_account_id("yoda.testnet".to_string().try_into().unwrap())
-            // .predecessor_account_id(predecessor)
+            .signer_account_id("spensa.testnet".to_string().try_into().unwrap())
+            .predecessor_account_id(predecessor)
             // .block_timestamp(0u64)
             .storage_usage(0u64)
             .is_view(is_view)
@@ -247,10 +243,10 @@ mod tests {
     }
 
     #[test]
-    fn stats() {
-        let context = get_context(false);
+    fn null_stats() {
+        let context = get_context(false, spensa());
         testing_env!(context);
-        let contract = Contract::new(doomslug());
+        let contract = Contract::new(spensa());
 
         // ensure that 'Contract' parameters are empty or null at initialization
         assert_eq!(
@@ -263,60 +259,103 @@ mod tests {
         );
         assert_eq!(
             contract.owner_id,
-            doomslug(),
+            spensa(),
             "ERR: owner ids should coincide"
         );
     }
 
     #[test]
     fn storing_score() {
-        let context = get_context(false);
+        let context = get_context(false, doomslug());
         testing_env!(context);
-        let mut contract = Contract::new(yoda());
+        let mut contract = Contract::new(spensa());
 
         // check initialization values are correct
         assert_eq!(0, contract.contract_state.user_count);
         assert_eq!(0, contract.contract_state.score_count);
         assert_eq!(
-            yoda().to_string(),
+            doomslug().to_string(),
             String::from(env::predecessor_account_id())
         );
 
         // ensure scores are actually stored on chain
 
+        // ------------------------- //
+        //           user 1          //
+        // ------------------------- //
         // store first score
-        let msg1 = "Congrats, your score is 570 points".to_string();
-        let acc1 = contract.store_score(570, msg1);
-        // assert_eq!(yoda().to_string(), acc1);
-        assert_eq!(1, contract.get_score_count());
+        let msg1 = "Sorry, your score is only 300 points".to_string();
+        let out1 = contract.store_score(300, msg1);
+        assert!(out1.successful_operation);
+        assert_eq!(String::from(env::predecessor_account_id()), out1.score_owner);
+
+        // ensure stats was incremented accordingly
         let state1 = contract.read_state();
         assert_eq!(1, state1.user_count, "ERR: should be 1 user");
         assert_eq!(1, state1.score_count, "ERR: should be 1 score");
 
+        // ------------------------- //
+        //           user 2          //
+        // ------------------------- //
+        // create a new context with a new predecessor for user #2: spensa
+        let context2 = get_context(false, spensa());
+        testing_env!(context2);
+
         // store second score
-        let msg2 = "Congrats, your score is 600 points".to_string();
-        contract.store_score(600, msg2);
-        assert_eq!(
-            1, contract.contract_state.user_count,
-            "ERR: should still be 1 user"
-        );
-        assert_eq!(
-            2, contract.contract_state.score_count,
-            "ERR: should be 2 scores now"
-        );
+        let msg2 = "Well done, your score is 501 points".to_string();
+        let out2 = contract.store_score(501, msg2);
+        assert!(out2.successful_operation);
+
+        // ensure again stats was incremented accordingly
+        assert_eq!("spensa.testnet".to_string(), out2.score_owner);
+        assert_eq!(2, contract.contract_state.user_count, "ERR: should be 2 users now");
+        assert_eq!(2, contract.contract_state.score_count, "ERR: should be 2 scores now");
+
+        // store third score
+        let msg3 = "You improved to 502 points".to_string();
+        let out3 = contract.store_score(502, msg3);
+        assert!(out3.successful_operation);
+
+        // check stats
+        assert_eq!("spensa.testnet".to_string(), out3.score_owner);
+        assert_eq!(2, contract.contract_state.user_count, "ERR: should remain 2 users");
+        assert_eq!(3, contract.contract_state.score_count, "ERR: expected 3 scores");
+
+        // ------------------------- //
+        //           user 3          //
+        // ------------------------- //
+        // create a third context with a new predecessor for user #3: rainbow
+        let context3 = get_context(false, rainbow());
+        testing_env!(context3);
+
+        // store a fourth, fifth, sixth score
+        contract.store_score(701, "Score of 701".to_string());
+        contract.store_score(702, "Score of 702".to_string());        
+        contract.store_score(703, "Score of 703".to_string());
+
+        // check stats
+        assert_eq!(3, contract.contract_state.user_count, "ERR: expected 3 users");
+        assert_eq!(6, contract.contract_state.score_count, "ERR: expected 6 scores");
+
+        // .contains_key() returns true if the LookupMap 'records' contains a score record for a user
+        assert!(contract.records.contains_key(&"doomslug.testnet".to_string())); 
+        assert!(contract.records.contains_key(&"spensa.testnet".to_string()));
+        assert!(contract.records.contains_key(&"rainbow.testnet".to_string()));
+        assert!(!contract.records.contains_key(&"nightshade.testnet".to_string()));
     }
+
 
     #[test]
     fn querying_scores() {
-        let context = get_context(false);
+        let context = get_context(false, doomslug());
         testing_env!(context);
         let mut contract = Contract::new(spensa());
 
         // store 3 scores to blockchain first
-        let msg3 = "Score of 378";
-        contract.store_score(312, "Score of 312".to_string());
-        contract.store_score(345, "Score of 345".to_string());
-        contract.store_score(378, msg3.to_string());
+        let msg3 = "Score of 330";
+        contract.store_score(310, "Score of 310".to_string());
+        contract.store_score(320, "Score of 320".to_string());
+        contract.store_score(330, msg3.to_string());
 
         // // ensure query_score_history() fn actually returns ALL the scores that got stored on blockchain
         // let score_history = contract.query_score_history("spensa.testnet".to_string());
@@ -329,12 +368,5 @@ mod tests {
         //     msg3_sha, last_score.description,
         //     "ERR: incorrect sha256 encryption of score descriptions"
         // );
-    }
-
-    fn read_only() {
-        let context = get_context(true);
-        testing_env!(context);
-        let mut contract = Contract::new(spensa());
-        // write test here
     }
 }

@@ -1,5 +1,3 @@
-
-# :fire: NEAR Oracle Contract 
 <p align="center">
   <a href="https://near.org/">
     <img alt="Near" src="https://github.com/BalloonBox-Inc/NEARoracle-Contract/blob/dev/images/inverted-primary-logo-bg.png" width="700" />
@@ -7,7 +5,7 @@
 </p>
 
 ---
-
+# NEAR Oracle Contract 
 ### Requirements
 
 node.js, npm (or yarn), Rust, and Wasm toolchain
