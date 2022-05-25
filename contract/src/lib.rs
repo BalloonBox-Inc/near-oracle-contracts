@@ -162,7 +162,7 @@ impl Contract {
             }
         }
         // return an outcome struct describing whether the
-        // operation of storing a score to blockchainw as successful
+        // operation of storing a score to blockchain was successful
         PublishingOutcome {
             gas_used: env::used_gas(),
             score_owner: account_id,
@@ -187,6 +187,7 @@ impl Contract {
     //              State-related implementations           //
     // -----------------------------------------------------//
 
+    // gasless query of the state of the contract at a point in time
     pub fn read_state(&self) -> ContractState {
         ContractState {
             owner: String::from(env::current_account_id()),
@@ -218,12 +219,12 @@ mod tests {
     use std::convert::TryInto;
 
     // define 3 fake users
-    fn spensa() -> AccountId {
-        "spensa.testnet".to_string().try_into().unwrap()
-    }
-
     fn doomslug() -> AccountId {
         "doomslug.testnet".to_string().try_into().unwrap()
+    }
+
+    fn spensa() -> AccountId {
+        "spensa.testnet".to_string().try_into().unwrap()
     }
 
     fn rainbow() -> AccountId {
@@ -240,6 +241,22 @@ mod tests {
             .storage_usage(0u64)
             .is_view(is_view)
             .build()
+    }
+
+    // implement two methods to return the length and to index the vector in the MyScoreHistory struct
+    impl MyScoreHistory {
+        fn len(&self) -> usize {
+            self.scores.len()
+        }
+    
+        // fn indexer(&self, indx: usize) -> User {
+        //     let d = &self.scores[indx].description;
+        //     User {
+        //         score: self.scores[indx].score,
+        //         timestamp: self.scores[indx].timestamp, 
+        //         description: d.to_vec(),
+        //     }
+        // }
     }
 
     #[test]
@@ -278,11 +295,17 @@ mod tests {
             String::from(env::predecessor_account_id())
         );
 
-        // ensure scores are actually stored on chain
+ 
+        /*
+        * we will now simulate the interaction of three distinct users with the contract:
+        * user 1 will store 1 score to chain (username: doomslug)
+        * user 2 will store 2 scores to chain (username: spensa)
+        * user 3 will store 3 scores to chain (username: rainbow)
+        */
 
-        // ------------------------- //
-        //           user 1          //
-        // ------------------------- //
+        // -------------- //
+        //      user 1    //
+        // -------------- //
         // store first score
         let msg1 = "Sorry, your score is only 300 points".to_string();
         let out1 = contract.store_score(300, msg1);
@@ -294,9 +317,9 @@ mod tests {
         assert_eq!(1, state1.user_count, "ERR: should be 1 user");
         assert_eq!(1, state1.score_count, "ERR: should be 1 score");
 
-        // ------------------------- //
-        //           user 2          //
-        // ------------------------- //
+        // -------------- //
+        //      user 2    //
+        // -------------- //
         // create a new context with a new predecessor for user #2: spensa
         let context2 = get_context(false, spensa());
         testing_env!(context2);
@@ -321,9 +344,9 @@ mod tests {
         assert_eq!(2, contract.contract_state.user_count, "ERR: should remain 2 users");
         assert_eq!(3, contract.contract_state.score_count, "ERR: expected 3 scores");
 
-        // ------------------------- //
-        //           user 3          //
-        // ------------------------- //
+        // -------------- //
+        //      user 3    //
+        // -------------- //
         // create a third context with a new predecessor for user #3: rainbow
         let context3 = get_context(false, rainbow());
         testing_env!(context3);
@@ -337,17 +360,40 @@ mod tests {
         assert_eq!(3, contract.contract_state.user_count, "ERR: expected 3 users");
         assert_eq!(6, contract.contract_state.score_count, "ERR: expected 6 scores");
 
+        // check on-chain score record
         // .contains_key() returns true if the LookupMap 'records' contains a score record for a user
         assert!(contract.records.contains_key(&"doomslug.testnet".to_string())); 
         assert!(contract.records.contains_key(&"spensa.testnet".to_string()));
         assert!(contract.records.contains_key(&"rainbow.testnet".to_string()));
         assert!(!contract.records.contains_key(&"nightshade.testnet".to_string()));
+
+        // query all scores
+        let user1 = contract.query_score_history("doomslug.testnet".to_string());
+        let user2 = contract.query_score_history("spensa.testnet".to_string());
+        let user3 = contract.query_score_history("rainbow.testnet".to_string());
+        assert_eq!(1, user1.len(), "ERR: only 1 score for user 1");
+        assert_eq!(2, user2.len(), "ERR: expected 2 scores for user 2");
+        assert_eq!(3, user3.len(), "ERR: expected 3 scores for user 3");
+
+        // ensure nuemrical scores are stored under the right user
+        assert_ne!(user1.scores[0].score, user2.scores[1].score);
+        assert_ne!(user3.scores[1].score, user3.scores[2].score);
+        assert_ne!(user2.scores[1].score, user3.scores[2].score);
+        assert_eq!(502, user2.scores[1].score);
+        assert_eq!(703, user3.scores[2].score);
+
+        // ensure message got sha256 encrypted
+        let msg1_sha = env::sha256("Sorry, your score is only 300 points".as_bytes());
+        let msg2_sha = env::sha256("Well done, your score is 501 points".as_bytes());
+        assert_eq!(msg1_sha, user1.scores[0].description, "ERR: incorrect sha256 encryption");
+        assert_eq!(msg2_sha, user2.scores[0].description, "ERR: incorrect sha256 encryption");
+        assert_eq!(32, user3.scores[2].description.len(), "ERR: encrypted msg should be 32 bytes long");
     }
 
 
     #[test]
     fn querying_scores() {
-        let context = get_context(false, doomslug());
+        let context = get_context(false, rainbow());
         testing_env!(context);
         let mut contract = Contract::new(spensa());
 
@@ -357,16 +403,7 @@ mod tests {
         contract.store_score(320, "Score of 320".to_string());
         contract.store_score(330, msg3.to_string());
 
-        // // ensure query_score_history() fn actually returns ALL the scores that got stored on blockchain
-        // let score_history = contract.query_score_history("spensa.testnet".to_string());
-
-        // // ensure message got sha256 encrypted
-        // let last_score = contract.query_latest_score("spensa.testnet".to_string());
-        // assert_eq!(378, last_score.score);
-        // let msg3_sha = env::sha256(msg3.as_bytes());
-        // assert_eq!(
-        //     msg3_sha, last_score.description,
-        //     "ERR: incorrect sha256 encryption of score descriptions"
-        // );
+        // ensure contract owner is correct
+        // assert_eq!("spensa.testnet", contract.read_state().owner, "ERR: mismatching contract owners");
     }
 }

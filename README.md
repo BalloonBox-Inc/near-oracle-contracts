@@ -38,5 +38,5 @@ You must compile the smart contract before deploying in to blockchain. Compile t
 
 ```bash
 cargo test -- --nocapture
-cargo test --package near_oracle --  --nocapture              # Note: 'near_oracle' comes from Cargo.toml's 'name' key
+cargo test --package near_oracle --  --nocapture      # Note: 'near_oracle' comes from Cargo.toml's 'name' key
 ```
