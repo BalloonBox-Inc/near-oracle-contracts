@@ -3,7 +3,7 @@ use near_sdk::collections::{LookupMap, Vector};
 use near_sdk::{
     borsh::{self, BorshDeserialize, BorshSerialize},
     serde::{Deserialize, Serialize},
-    AccountId, Gas, PanicOnDefault,
+    AccountId, Gas, PanicOnDefault, BorshStorageKey,
 };
 use near_sdk::{env, near_bindgen};
 
@@ -46,6 +46,13 @@ pub struct PublishingOutcome {
     successful_operation: bool,
 }
 
+// since with Borsh serialization an enum only takes one byte, let's 
+// declare an enum for tracking storage prefixes and keys
+#[derive(BorshStorageKey, BorshSerialize)]
+pub enum StorageKey {
+    Accounts { account_hash: Vec<u8> },
+}
+
 // user's score, timestamp, and score description as a struct
 #[derive(BorshDeserialize, BorshSerialize, Deserialize, Serialize)]
 #[serde(crate = "near_sdk::serde")]
@@ -86,7 +93,7 @@ impl Contract {
         );
         Self {
             owner_id,
-            records: LookupMap::new(b"s"),
+            records: LookupMap::new(b"m"),
             contract_state: State {
                 user_count: 0u64,
                 score_count: 0u64,
@@ -114,7 +121,11 @@ impl Contract {
         match mappy {
             // if it's a new user --> create a brand new vector to store their score
             None => {
-                let mut x = Vector::new(b"v");
+                let mut x = Vector::new(
+                    // Every instance of a persistent collection requires a UNIQUE storage prefix,
+                    // so generate a distinct prefix for every user
+                    StorageKey::Accounts { account_hash: env::sha256(account_id.as_bytes()) }
+                );
                 x.push(&new_score);
                 // update the score count iff you succeeded writing it to blockchain`
                 self.records.insert(&account_id, &x);
@@ -225,10 +236,10 @@ mod tests {
 
     // part of writing unit tests is setting up a mock context
     // provide a `predecessor` here, it'll modify the default context
-    fn get_context(is_view: bool, predecessor: AccountId) -> VMContext {
+    fn get_context(is_view: bool) -> VMContext {
         VMContextBuilder::new()
             .signer_account_id("yoda.testnet".to_string().try_into().unwrap())
-            .predecessor_account_id(predecessor)
+            // .predecessor_account_id(predecessor)
             // .block_timestamp(0u64)
             .storage_usage(0u64)
             .is_view(is_view)
@@ -237,7 +248,7 @@ mod tests {
 
     #[test]
     fn stats() {
-        let context = get_context(false, doomslug());
+        let context = get_context(false);
         testing_env!(context);
         let contract = Contract::new(doomslug());
 
@@ -259,7 +270,7 @@ mod tests {
 
     #[test]
     fn storing_score() {
-        let context = get_context(false, yoda());
+        let context = get_context(false);
         testing_env!(context);
         let mut contract = Contract::new(yoda());
 
@@ -297,7 +308,7 @@ mod tests {
 
     #[test]
     fn querying_scores() {
-        let context = get_context(false, spensa());
+        let context = get_context(false);
         testing_env!(context);
         let mut contract = Contract::new(spensa());
 
@@ -321,7 +332,7 @@ mod tests {
     }
 
     fn read_only() {
-        let context = get_context(true, spensa());
+        let context = get_context(true);
         testing_env!(context);
         let mut contract = Contract::new(spensa());
         // write test here
