@@ -1,6 +1,6 @@
 // Import crates
 use near_sdk::collections::{LookupMap, Vector};
-use near_sdk::{
+use near_sdk::{log,
     borsh::{self, BorshDeserialize, BorshSerialize},
     serde::{Deserialize, Serialize},
     AccountId, Gas, PanicOnDefault, BorshStorageKey,
@@ -121,6 +121,7 @@ impl Contract {
         match mappy {
             // if it's a new user --> create a brand new vector to store their score
             None => {
+                log!("{} is a new user", account_id);
                 let mut x = Vector::new(
                     // Every instance of a persistent collection requires a UNIQUE storage prefix,
                     // so generate a distinct prefix for every user
@@ -133,11 +134,13 @@ impl Contract {
                     self.contract_state.user_count += 1;
                     self.contract_state.score_count += 1;
                     success = true;
+                    log!("Score stored successfully to NEAR blockchain");
                 }
             }
 
             // if it's a returning user --> append new score to existing vector
             Some(i) => {
+                log!("{} is a returning user", account_id);
                 let indx = i.len() - 1;
                 if let Some(j) = i.get(indx) {
                     let _timelapsed = new_score.timestamp - j.timestamp;
@@ -152,6 +155,7 @@ impl Contract {
                         if self.records.insert(&account_id, &y).is_some() {
                             self.contract_state.score_count += 1;
                             success = true;
+                            log!("Score stored successfully to NEAR blockchain");
                         }
                     } else {
                         env::panic_str(
