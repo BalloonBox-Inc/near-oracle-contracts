@@ -27,12 +27,12 @@ rustup target add wasm32-unknown-unknown
 
 #### Debugging 
 ###### Compile time errors
-You must compile the smart contract before deploying in to blockchain. Compile the contract running the terminal command `./build.sh`. If compilation returns an error *unable to get packages from source* you might need to clear the cargo registry running `rm -rf /<userpathtocargoregistry>/.cargo/registry/`.
+You must compile the smart contract before deploying it to blockchain. Compile the contract running the terminal command `./build.sh`. If compilation returns an error *unable to get packages from source* you might need to clear the cargo registry running `rm -rf /<userpathtocargoregistry>/.cargo/registry/`.
 
 
 #### Navigating `near_sdk` Persistent Collections
 
-> Note to all NEAR Rust developers: remember to choose your Rust objects based ont heir associated time complexity. Consult [this](https://docs.near.org/docs/concepts/data-storage#big-o-notation-1) table ranking object types in the `near_sdk' Rust collection by Big-O Notation.
+> Note to NEAR Rust developers: remember to choose your Rust objects based ont their associated time complexity. Consult [this](https://docs.near.org/docs/concepts/data-storage#big-o-notation-1) table ranking object types in the `near_sdk' Rust collection by Big-O Notation.
 
 #### Testing
 
