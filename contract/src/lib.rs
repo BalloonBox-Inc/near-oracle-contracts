@@ -40,7 +40,7 @@ pub struct MyScoreHistory {
 // the struct below describes the operation outcome
 #[derive(Serialize)]
 #[serde(crate = "near_sdk::serde")]
-pub struct PublishingOutcome {
+pub struct ScoreOutcome {
     gas_used: Gas,
     score_owner: String,
     successful_operation: bool,
@@ -63,7 +63,7 @@ pub struct User {
 }
 
 // this is the singleton = the main struct for this smart contract
-// the [near_bindgen] macro is used on the singleton only and it generates the boilterplate
+// the [near_bindgen] macro is used on the singleton ONLY and it generates the boilterplate
 // allowing all the methods implemented on the 'Contract' singleton to be called externally
 // Lastly, use the [PanicOnDefault] macro to prohibit the default implementation on the contract.
 // Since we wrote a custom init function, called new(), we want Default implementation to be prohibited.
@@ -108,7 +108,7 @@ impl Contract {
     // declare this to be a payable method using the [payable] macro
     // i.e., you must pay gas to be able to call and execute this function
     #[payable]
-    pub fn store_score(&mut self, score: u16, description: String) -> PublishingOutcome {
+    pub fn store_score(&mut self, score: u16, description: String) -> ScoreOutcome {
         let account_id = String::from(env::predecessor_account_id());
         let new_score = User {
             score: score,
@@ -163,7 +163,7 @@ impl Contract {
         }
         // return an outcome struct describing whether the
         // operation of storing a score to blockchain was successful
-        PublishingOutcome {
+        ScoreOutcome {
             gas_used: env::used_gas(),
             score_owner: account_id,
             successful_operation: success,
@@ -235,9 +235,10 @@ mod tests {
     // provide a `predecessor` here, it'll modify the default context
     fn get_context(is_view: bool, predecessor: AccountId ) -> VMContext {
         VMContextBuilder::new()
-            .signer_account_id("spensa.testnet".to_string().try_into().unwrap())
+            // set 'spensa.testnet' to be the contract owner
+            .current_account_id("spensa.testnet".to_string().try_into().unwrap())
             .predecessor_account_id(predecessor)
-            // .block_timestamp(0u64)
+            .block_timestamp(0u64)
             .storage_usage(0u64)
             .is_view(is_view)
             .build()
@@ -248,20 +249,11 @@ mod tests {
         fn len(&self) -> usize {
             self.scores.len()
         }
-    
-        // fn indexer(&self, indx: usize) -> User {
-        //     let d = &self.scores[indx].description;
-        //     User {
-        //         score: self.scores[indx].score,
-        //         timestamp: self.scores[indx].timestamp, 
-        //         description: d.to_vec(),
-        //     }
-        // }
     }
 
     #[test]
-    fn null_stats() {
-        let context = get_context(false, spensa());
+    fn initialize_stats() {
+        let context = get_context(true, spensa());
         testing_env!(context);
         let contract = Contract::new(spensa());
 
@@ -282,7 +274,7 @@ mod tests {
     }
 
     #[test]
-    fn storing_score() {
+    fn store_multiple_scores() {
         let context = get_context(false, doomslug());
         testing_env!(context);
         let mut contract = Contract::new(spensa());
@@ -392,18 +384,36 @@ mod tests {
 
 
     #[test]
-    fn querying_scores() {
+    fn query_scores_and_state() {
         let context = get_context(false, rainbow());
         testing_env!(context);
         let mut contract = Contract::new(spensa());
+        let init_size = contract.read_state().size_now;
 
         // store 3 scores to blockchain first
         let msg3 = "Score of 330";
         contract.store_score(310, "Score of 310".to_string());
         contract.store_score(320, "Score of 320".to_string());
-        contract.store_score(330, msg3.to_string());
+        let out = contract.store_score(330, msg3.to_string());
+        assert!(init_size < contract.read_state().size_now, "ERR: contract bytesize should increase when storing data");
 
-        // ensure contract owner is correct
-        // assert_eq!("spensa.testnet", contract.read_state().owner, "ERR: mismatching contract owners");
+        // query the 3 scores
+        let user0 = contract.query_score_history("rainbow.testnet".to_string());
+        assert_eq!(3, user0.scores.len(), "ERR: expected 3 scores");
+        assert!(!contract.records.get(&"rainbow.testnet".to_string()).is_none());
+        assert_eq!(320, user0.scores[1].score, "ERR: mismatchig scores");
+        assert_eq!(user0.scores[0].timestamp, user0.scores[1].timestamp, "ERR: expected identical timestamps");
+        assert_ne!(user0.scores[0].description, user0.scores[1].description, "ERR: expected different sha256 encryptions");
+
+        // call read_state() to check stats
+        assert_eq!(1, contract.read_state().user_count, "ERR: expected 1 user");
+        assert_eq!(3, contract.read_state().score_count, "ERR: expected 3 scores");
+        assert!(contract.read_state().timestamp < 5 * u64::pow(10, 9), "ERR: contract should execute in < 5 sec");
+        assert!(contract.read_state().timestamp == env::block_timestamp(), "ERR: timestamp now should be identical to the contract timestamp");
+
+        // ensure contract owner and score owner are correct
+        assert_eq!("rainbow.testnet".to_string(), out.score_owner, "ERR: mismatching score owners");
+        assert_eq!("spensa.testnet", contract.read_state().owner, "ERR: mismatching contract owners");
+        assert_eq!("spensa.testnet".to_string(), String::from(contract.owner_id), "ERR: mismatching contract owners");
     }
 }
