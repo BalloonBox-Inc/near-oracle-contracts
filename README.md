@@ -70,7 +70,7 @@ Here are the commands to run the contract from terminal. You must be in the dire
 ```bash
 export PATH="$HOME/.cargo/bin:$PATH"                                       # (optional) export path to cargo files
 ./build.sh                                                                 # compile 
-near deploy myname.testnet --wasmFile res/near_oracle.wasm        # deploy
+near deploy myname.testnet --wasmFile res/near_oracle.wasm                 # deploy
 near call myname.testnet new '{"owner_id": "myname.testnet"}' --accountId myname.testnet # initialize
 ```
 > :bulb: note: replace `myname.testnet` with the actual name of your testnet account
