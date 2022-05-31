@@ -42,7 +42,7 @@ pub struct Token {
     pub owner_id: AccountId,
 }
 
-// The Json token is what will be returned from view calls. It holds all the information
+// The Json token is what will be returned from view calls. This object exists onn-chain only. It holds all the information
 // for an NFT that you want to send back as JSON whenever someone does a view call
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
