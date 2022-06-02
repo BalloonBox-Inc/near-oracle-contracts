@@ -11,6 +11,10 @@ impl Contract {
         let token = Token {
             // set owner ID to be equal to the receiver ID
             owner_id: receiver_id,
+            // set the approved account IDs to the default value (an empty map)
+            approved_account_ids: Default::default(),
+            // the next approval ID is set to 0
+            next_approval_id: 0,
         };
 
         // insert the token ID and the token struct,
