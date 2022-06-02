@@ -18,9 +18,33 @@ There are 2 types of methods:
 //         gasless methods         //
 // ------------------------------- //
 
+// calcualtes how many bytes of storage is taken up by each approved account id
 pub (crate) fn bytes_for_approved_account_id(account_id: &AccountId) -> u64 {
     // The extra 4 bytes are coming from Borsh serialization to store the length of the string.
     account_id.as_str().len() as u64 + 4 + size_of::<u64>() as u64
+}
+
+// refund the cost for storage taken up by the approved account IDs saved under a given account
+// and send the funds to the given account
+pub (crate) fn refund_approved_account_ids_iter<'a, I>(
+    account_id: AccountId,
+    // the approved account IDs must be passed in as an iterator "I"
+    approved_account_ids: I, 
+) -> Promise where I: Iterator<Item = &'a AccountId>,
+{
+    // get the storage total by going through and summing all the bytes for each approved account IDs
+    let storage_released: u64 = approved_account_ids.map(bytes_for_approved_account_id).sum();
+    // transfer into the account the storage that is released
+    Promise::new(account_id).transfer(Balance::from(storage_released) * env::storage_byte_cost())
+}
+
+// takes a map of approved account IDs and refund the storage cost to a given account
+pub (crate) fn refund_approved_account_ids(
+    account_id: AccountId,
+    approved_account_ids: &HashMap<AccountId, u64>,
+) -> Promise {
+    // call the function "refund_Approved_account_ids_iter" and pass the approved account IDs as keys
+    refund_approved_account_ids_iter(account_id, approved_account_ids.keys())
 }
 
 // used to generate a unique prefix in our storage collections (this is to avoid data collisions)
@@ -122,9 +146,9 @@ impl Contract {
         sender_id: &AccountId,
         receiver_id: &AccountId,
         token_id: &TokenId,
-        memo: Option<String>,
         //we introduce an approval ID so that people with that approval ID can transfer the token
         approval_id: Option<u64>,
+        memo: Option<String>,
     ) -> Token {
         // get the token object by passing the token_id
         let token = self.token_by_id.get(&token_id).expect("No token");
