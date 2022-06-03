@@ -109,7 +109,7 @@ near view myname.testnet read_state
 ### :weight_lifting_woman: Using `near_sdk` Persistent Collections
 
 > Note to NEAR Rust developers: remember to choose your Rust objects based on their associated time complexity. Consult [this](https://docs.near.org/docs/concepts/data-storage#big-o-notation-1) table ranking object types in the `near_sdk' Rust collection by Big-O Notation.
-> Remember that all objects (structs, enums, etc.) which 'live' on-chain, should preferably be objects in the NEAR persistet collections, whereas objects that 'live' off-chain *must* be Rust std collections or Rust objects of some sort. near_sdk objects only exist on-chain and can't be rendered off-chain.
+> Remember that all objects (structs, enums, etc.) which 'live' on-chain, should preferably be objects in the NEAR persistent collections, whereas objects that 'live' off-chain *must* be Rust std collections or Rust objects of some sort. near_sdk objects only exist on-chain and can't be rendered off-chain.
 
 ### :beetle: Debugging
 ###### Compile time errors

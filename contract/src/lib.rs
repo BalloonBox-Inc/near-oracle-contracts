@@ -145,7 +145,7 @@ impl Contract {
                 if let Some(j) = i.get(indx) {
                     let _timelapsed = new_score.timestamp - j.timestamp;
                     // if statement w/ 2 conditions: iff there's less than 10 scores, iff last score is 30+ days old
-                    if i.len() < 10 {
+                    if i.len() < 1000 {
                         // && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
                         // && timelapsed > 2592 * u64::pow(10, 12) {  // 30 days
                         let mut y = i;
