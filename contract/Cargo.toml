@@ -5,7 +5,7 @@ authors = ["Irene Fabris <irene@balloonbox.io>"]
 edition = "2018"
 
 [lib]
-crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib"] # consider adding "rlib" to your crate-type list
 
 [dependencies]
 serde = { version = "*", features = ["derive"] }
@@ -16,7 +16,7 @@ hex = "0.4.3"
 [profile.release]
 codegen-units = 1
 # Tell `rustc` to optimize for small code size.
-opt-level = "z"
+opt-level = "z"  # <-- aggressively optimize for size. Replace 'z' with 's' to optimize for speed instead
 lto = true
 debug = false
 panic = "abort"

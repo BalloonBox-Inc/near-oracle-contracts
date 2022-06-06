@@ -61,4 +61,13 @@
         "last 1 safari version"
       ]
     }
+    {
+      "name": "near_oracle",
+      "version": "1.0.0",
+      "description": "Storing & manipulating credit scores on NEAR blockchain",
+      "author": "Irene Fabris",
+      "license": "Apache License 2.0",
+      "scripts": {
+          "build": "cd contract && bash build.sh && cd ../.."
+      }
   }
