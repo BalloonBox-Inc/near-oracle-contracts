@@ -111,7 +111,7 @@ impl Contract {
     // also declare this to be a private method using the [private] macro
     // i.e., only the account of the contract itself can call this method
     // either directly or through a promise
-    #[private]
+    // #[private]
     #[payable]
     pub fn store_score(&mut self, score: u16, description: String) -> ScoreOutcome {
         let account_id = String::from(env::predecessor_account_id());
