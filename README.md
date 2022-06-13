@@ -44,6 +44,7 @@ near keys main.testnet                           # query and see the keys associ
 near state main.testnet                          # view the state of your account
 near create-account sub.main.testnet --masterAccount main.testnet # create a sub-account from a main account
 near delete sub.main.testnet main.testnet        # delete an account and transfer leftover funds to a beneficiary master account
+near send sender.testnet receiver.testnet 1      # send 1 NEAR to receiver.testnet from sender.testnet
 ```
 > :bulb: note: replace `main` and `sub` in the above commands with the names of your main and sub-account, e.g., `michael.testnet`
 
