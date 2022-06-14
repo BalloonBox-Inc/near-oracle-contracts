@@ -6,6 +6,7 @@ use near_sdk::{log,
     AccountId, Gas, PanicOnDefault, BorshStorageKey,
 };
 use near_sdk::{env, near_bindgen};
+use core::ops::Deref;
 
 // --------------------------------------------------------------------- //
 //                          Define main objects                          //
@@ -33,6 +34,13 @@ pub struct ContractState {
 #[derive(Serialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct MyScoreHistory {
+    scores: Vec<Score>,
+}
+
+// output of the function querying a user's score history
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct OnChainHistory {
     scores: Vec<User>,
 }
 
@@ -62,6 +70,15 @@ pub struct User {
     pub description: Vec<u8>,
 }
 
+// user's score, timestamp, and score description as an offchain sruct
+#[derive(Serialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct Score {
+    pub score: u16,
+    pub timestamp: u64,
+    pub description: String,
+}
+
 // this is the singleton = the main struct for this smart contract
 // the [near_bindgen] macro is used on the singleton ONLY and it generates the boilterplate
 // allowing all the methods implemented on the 'Contract' singleton to be called externally
@@ -79,6 +96,15 @@ pub struct Contract {
 //                        Implement main objects                         //
 //                                                                       //
 // ----------------------------------------------------------------------//
+
+// impl Deref for OnChainHistory {
+//     type Item = Vec<Score>;
+
+//     fn deref(&self) -> &self::Item {
+//         &self.scores
+//     }
+// }
+
 
 #[near_bindgen]
 impl Contract {
@@ -118,7 +144,7 @@ impl Contract {
         let new_score = User {
             score: score,
             timestamp: env::block_timestamp(),
-            description: env::sha256(description.as_bytes()),
+            description: description.as_bytes().to_vec(),
         };
 
         let mut success = false;
@@ -150,7 +176,7 @@ impl Contract {
                 if let Some(j) = i.get(indx) {
                     let timelapsed = new_score.timestamp - j.timestamp;
                     // if statement w/ 2 conditions: iff there's less than 10 scores, iff last score is 30+ days old
-                    if i.len() < 3 && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
+                    if i.len() < 1000 && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
                         // && timelapsed > 2592 * u64::pow(10, 12) {  // 30 days
                         let mut y = i;
                         y.push(&new_score);
@@ -180,10 +206,19 @@ impl Contract {
 
     // query all score history for a specified user
     pub fn query_score_history(&self, account_id: String) -> MyScoreHistory {
-        if let Some(i) = self.records.get(&account_id) {
-            let read_scores = i.to_vec();
+        if let Some(a) = self.records.get(&account_id) {
+            
+            let mut score_history = vec![];
+            for i in a.iter() {
+                let s = Score {
+                    score: i.score,
+                    timestamp: i.timestamp,
+                    description: String::from_utf8(i.description).unwrap(), //decrypt message
+                };
+                score_history.push(s);
+            };
             return MyScoreHistory {
-                scores: read_scores,
+                scores: score_history,
             };
         } else {
             // implement logic in case the above Option<T> returns a NoneType
