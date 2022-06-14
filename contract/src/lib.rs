@@ -6,7 +6,6 @@ use near_sdk::{log,
     AccountId, Gas, PanicOnDefault, BorshStorageKey,
 };
 use near_sdk::{env, near_bindgen};
-use core::ops::Deref;
 
 // --------------------------------------------------------------------- //
 //                          Define main objects                          //
@@ -164,7 +163,7 @@ impl Contract {
                 log!("{} is a returning user", account_id);
                 let indx = i.len() - 1;
                 if let Some(j) = i.get(indx) {
-                    let timelapsed = new_score.timestamp - j.timestamp;
+                    let _timelapsed = new_score.timestamp - j.timestamp;
                     // if statement w/ 2 conditions: iff there's less than 1000 scores, iff last score is 30+ days old
                     if i.len() < 1000 {
                         // && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
