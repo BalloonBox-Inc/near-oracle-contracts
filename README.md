@@ -44,6 +44,7 @@ near keys main.testnet                           # query and see the keys associ
 near state main.testnet                          # view the state of your account
 near create-account sub.main.testnet --masterAccount main.testnet # create a sub-account from a main account
 near delete sub.main.testnet main.testnet        # delete an account and transfer leftover funds to a beneficiary master account
+near send sender.testnet receiver.testnet 1      # send 1 NEAR to receiver.testnet from sender.testnet
 ```
 > :bulb: note: replace `main` and `sub` in the above commands with the names of your main and sub-account, e.g., `michael.testnet`
 
@@ -110,6 +111,16 @@ near view myname.testnet read_state
 
 > Note to NEAR Rust developers: remember to choose your Rust objects based on their associated time complexity. Consult [this](https://docs.near.org/docs/concepts/data-storage#big-o-notation-1) table ranking object types in the `near_sdk' Rust collection by Big-O Notation.
 > Remember that all objects (structs, enums, etc.) which 'live' on-chain, should preferably be objects in the NEAR persistent collections, whereas objects that 'live' off-chain *must* be Rust std collections or Rust objects of some sort. near_sdk objects only exist on-chain and can't be rendered off-chain.
+
+### :racing_car: Gas Fees
+
+> The smart contract contains both some payable and some gasless methods. You can easily tell apart a payable method because of the macro `#[paybale]` above the method declaration. Payable methods cost a discretionary amount of gas -established by the NEAR Protocol- and you must *always* invoke them through a *function call*. All other methods that don't alter the contract state are gasless and are to be invoked through a *function view*. Both gas and gasless methods may or may not require some function parameters to be parsed. 
+
+> What is gas actually charging for? A few things
+> - data sorage on blockchain
+> - common and complex [actions](https://docs.near.org/docs/concepts/gas#the-cost-of-common-actions)
+> - [function calls](https://docs.near.org/docs/concepts/gas#function-calls) 
+
 
 ### :beetle: Debugging
 ###### Compile time errors

@@ -33,6 +33,13 @@ pub struct ContractState {
 #[derive(Serialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct MyScoreHistory {
+    scores: Vec<Score>,
+}
+
+// output of the function querying a user's score history
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct OnChainHistory {
     scores: Vec<User>,
 }
 
@@ -62,6 +69,15 @@ pub struct User {
     pub description: Vec<u8>,
 }
 
+// user's score, timestamp, and score description as an offchain sruct
+#[derive(Serialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct Score {
+    pub score: u16,
+    pub timestamp: u64,
+    pub description: String,
+}
+
 // this is the singleton = the main struct for this smart contract
 // the [near_bindgen] macro is used on the singleton ONLY and it generates the boilterplate
 // allowing all the methods implemented on the 'Contract' singleton to be called externally
@@ -79,7 +95,6 @@ pub struct Contract {
 //                        Implement main objects                         //
 //                                                                       //
 // ----------------------------------------------------------------------//
-
 #[near_bindgen]
 impl Contract {
     // initialize the contract
@@ -111,14 +126,14 @@ impl Contract {
     // also declare this to be a private method using the [private] macro
     // i.e., only the account of the contract itself can call this method
     // either directly or through a promise
-    #[private]
+    // #[private]
     #[payable]
     pub fn store_score(&mut self, score: u16, description: String) -> ScoreOutcome {
         let account_id = String::from(env::predecessor_account_id());
         let new_score = User {
             score: score,
             timestamp: env::block_timestamp(),
-            description: env::sha256(description.as_bytes()),
+            description: description.as_bytes().to_vec(),
         };
 
         let mut success = false;
@@ -149,7 +164,7 @@ impl Contract {
                 let indx = i.len() - 1;
                 if let Some(j) = i.get(indx) {
                     let _timelapsed = new_score.timestamp - j.timestamp;
-                    // if statement w/ 2 conditions: iff there's less than 10 scores, iff last score is 30+ days old
+                    // if statement w/ 2 conditions: iff there's less than 1000 scores, iff last score is 30+ days old
                     if i.len() < 1000 {
                         // && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
                         // && timelapsed > 2592 * u64::pow(10, 12) {  // 30 days
@@ -181,10 +196,19 @@ impl Contract {
 
     // query all score history for a specified user
     pub fn query_score_history(&self, account_id: String) -> MyScoreHistory {
-        if let Some(i) = self.records.get(&account_id) {
-            let read_scores = i.to_vec();
+        if let Some(a) = self.records.get(&account_id) {
+            
+            let mut score_history = vec![];
+            for i in a.iter() {
+                let s = Score {
+                    score: i.score,
+                    timestamp: i.timestamp,
+                    description: String::from_utf8(i.description).unwrap(), //decrypt message
+                };
+                score_history.push(s);
+            };
             return MyScoreHistory {
-                scores: read_scores,
+                scores: score_history,
             };
         } else {
             // implement logic in case the above Option<T> returns a NoneType
@@ -382,13 +406,6 @@ mod tests {
         assert_ne!(user2.scores[1].score, user3.scores[2].score);
         assert_eq!(502, user2.scores[1].score);
         assert_eq!(703, user3.scores[2].score);
-
-        // ensure message got sha256 encrypted
-        let msg1_sha = env::sha256("Sorry, your score is only 300 points".as_bytes());
-        let msg2_sha = env::sha256("Well done, your score is 501 points".as_bytes());
-        assert_eq!(msg1_sha, user1.scores[0].description, "ERR: incorrect sha256 encryption");
-        assert_eq!(msg2_sha, user2.scores[0].description, "ERR: incorrect sha256 encryption");
-        assert_eq!(32, user3.scores[2].description.len(), "ERR: encrypted msg should be 32 bytes long");
     }
 
 
