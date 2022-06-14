@@ -96,16 +96,6 @@ pub struct Contract {
 //                        Implement main objects                         //
 //                                                                       //
 // ----------------------------------------------------------------------//
-
-// impl Deref for OnChainHistory {
-//     type Item = Vec<Score>;
-
-//     fn deref(&self) -> &self::Item {
-//         &self.scores
-//     }
-// }
-
-
 #[near_bindgen]
 impl Contract {
     // initialize the contract
@@ -175,8 +165,9 @@ impl Contract {
                 let indx = i.len() - 1;
                 if let Some(j) = i.get(indx) {
                     let timelapsed = new_score.timestamp - j.timestamp;
-                    // if statement w/ 2 conditions: iff there's less than 10 scores, iff last score is 30+ days old
-                    if i.len() < 1000 && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
+                    // if statement w/ 2 conditions: iff there's less than 1000 scores, iff last score is 30+ days old
+                    if i.len() < 1000 {
+                        // && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
                         // && timelapsed > 2592 * u64::pow(10, 12) {  // 30 days
                         let mut y = i;
                         y.push(&new_score);
@@ -416,13 +407,6 @@ mod tests {
         assert_ne!(user2.scores[1].score, user3.scores[2].score);
         assert_eq!(502, user2.scores[1].score);
         assert_eq!(703, user3.scores[2].score);
-
-        // ensure message got sha256 encrypted
-        let msg1_sha = env::sha256("Sorry, your score is only 300 points".as_bytes());
-        let msg2_sha = env::sha256("Well done, your score is 501 points".as_bytes());
-        assert_eq!(msg1_sha, user1.scores[0].description, "ERR: incorrect sha256 encryption");
-        assert_eq!(msg2_sha, user2.scores[0].description, "ERR: incorrect sha256 encryption");
-        assert_eq!(32, user3.scores[2].description.len(), "ERR: encrypted msg should be 32 bytes long");
     }
 
 
