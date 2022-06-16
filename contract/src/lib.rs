@@ -164,8 +164,8 @@ impl Contract {
                 let indx = i.len() - 1;
                 if let Some(j) = i.get(indx) {
                     let timelapsed = new_score.timestamp - j.timestamp;
-                    // if statement w/ 2 conditions: iff there's less than 1000 scores, iff last score is 30+ days old
-                    if i.len() < 7 && timelapsed > 60 * u64::pow(10, 9) { // 60 seconds
+                    // if statement w/ 2 conditions: iff there's less than 100 scores, iff last score is 30+ days old
+                    if i.len() < 100 && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
                         // && timelapsed > 2592 * u64::pow(10, 12) {  // 30 days
                         let mut y = i;
                         y.push(&new_score);
@@ -178,7 +178,7 @@ impl Contract {
                         }
                     } else {
                         env::panic_str(
-                            "ERR_EXCEEDED_TEN_SCORES_UPPERBOUND_OR_LATEST_SCORE_IS_TOO_RECENT",
+                            "ERR_EXCEEDED_HUNDRED_SCORES_UPPERBOUND_OR_LATEST_SCORE_IS_TOO_RECENT",
                         )
                     }
                 }
@@ -233,6 +233,17 @@ impl Contract {
     // check whether a user has a score record - for testing only (?)
     pub fn user_exist(&self, account_id: String) -> bool {
         return self.records.get(&account_id).is_some();
+    }
+
+    // return the length of the user's score history
+    pub fn maxout_check(&self, account_id: String) -> u64 {
+        if let Some(i) = self.records.get(&account_id) {
+            let count = i.len();
+            return count;
+        } else {
+            let count: u64 = 0;
+            return count;
+        }
     }
 }
 
