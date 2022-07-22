@@ -1,6 +1,6 @@
 [package]
 name = "nft_simple"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Near Inc <hello@nearprotocol.com>"]
 edition = "2021"
 
@@ -8,7 +8,7 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-near-sdk = "=4.0.0-pre.4"
+near-sdk = "=4.0.0"
 
 [profile.release]
 codegen-units=1
