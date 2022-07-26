@@ -149,6 +149,7 @@ impl NonFungibleTokenCore for Contract {
                 owner_id: token.owner_id,
                 metadata,
                 approved_account_ids: token.approved_account_ids,
+                royalty: token.royalty,
             })
 
         //if there is no token ID in the token_by_id_collection, then return None
