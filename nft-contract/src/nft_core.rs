@@ -174,27 +174,31 @@ impl NonFungibleTokenResolver for Contract {
         if let PromiseResult::Successful(value) = env::promise_result(0) {
             //As per the standard, the nft_on_transfer tells us whether we should return the token to it's owner or not
             if let Ok(return_token) = near_sdk::serde_json::from_slice::<bool>(&value) {
-                //if we need don't need to return the token, we simply return true meaning everything went fine
+                //if we don't need to return the token, we simply return true meaning everything went fine
                 if !return_token {
                     /* 
                         since we've already transferred the token and nft_on_transfer returned false, we don't have to 
                         revert the original transfer and thus we can just return true since nothing went wrong.
                     */
-                    refund_approved_account_ids(owner_id,  &approved_account_ids); // useless ???
+                    //case 1: the NFT transfer went through: all is well! All remains to do is refunding
+                    //the old NFT owner for freeing storage space since we reset the approved_account_ids HashMap
+                    refund_approved_account_ids(owner_id,  &approved_account_ids);
                     return true;
                 }
             }
         }
-
+        
         //get the token object if there is some token object
         let mut token = if let Some(token) = self.token_by_id.get(&token_id) {
             if token.owner_id != receiver_id {
+                //case 2: 
                 //refund the owner for releasing the storage used up by the approved account IDs
                 refund_approved_account_ids(owner_id, &approved_account_ids);
                 // he token is not owned by the receiver anymore. Can't return it.
                 return true;
             }
             token
+            //case 3:
             //if there isn't a token object, it was burned and so we return true
         } else {
             //in this case too, we refund the owner for releasing the storage used up by the approved account IDs

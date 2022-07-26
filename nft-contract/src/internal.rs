@@ -6,11 +6,11 @@ use std::mem::size_of;
 /*
 This .rs files contains all 'internal methods' for the contract, 
 meaning that all he functions declared here 
-are called internally by the contract, but 
-they can't be called externally from the CLI.
+are called internally by the contract, and
+can not be called externally from the CLI.
 There are 2 types of methods:
 (1) gasless methods: that do NOT act directly on the main singleton and DON'T modify the contract state
-(2) gas methods: that do act directly on the singleton and DON'T 
+(2) gas methods: that do act directly on the singleton and modify contract state
  */
 
 
@@ -164,7 +164,8 @@ impl Contract {
                 env::panic_str("Unauthorized");
             }
             
-            //If they included an approval_id, check if the sender's actual approval_id is the same as the one included
+            //If they included an approval_id, check if the sender's
+            //actual approval_id is the same as the one included
             if let Some(enforced_approval_id) =  approval_id {
                 //get the actual approval ID
                 let actual_approval_id = token.approved_account_ids.get(sender_id)
