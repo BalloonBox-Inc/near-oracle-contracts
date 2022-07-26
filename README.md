@@ -91,5 +91,5 @@ Imagine you have an already-deployed smart contract. Assume you want to upgrade/
 
 You're ready to interact with the smart contract. Use view calls to return viewing data from the smart contract.
 ```bash
-near view $NFT_CONTRACT_ID nft_token '{"token_id": "nft1"}'                  # View call 
+near view $NFT_CONTRACT_ID json_token '{"token_id": "nft1"}'                  # View call 
 ```

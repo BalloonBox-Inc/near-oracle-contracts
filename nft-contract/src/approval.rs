@@ -87,15 +87,12 @@ impl NonFungibleTokenCore for Contract {
         //if some message was passed into the function, we initiate a cross contract call on the
         //account we're giving access to. 
         if let Some(msg) = msg {
-            ext_non_fungible_approval_receiver::nft_on_approve(
+            ext_non_fungible_approval_receiver::ext(account_id)
+            .nft_on_approve(
                 token_id,
                 token.owner_id,
                 approval_id,
-                msg,
-                account_id, //contract account we're calling
-                NO_DEPOSIT, //NEAR deposit we attach to the call
-                env::prepaid_gas() - GAS_FOR_NFT_APPROVE, //GAS we're attaching
-            )
+                msg)
             .as_return(); // Returning this promise
         }
     }

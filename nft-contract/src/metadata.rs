@@ -38,16 +38,16 @@ pub struct TokenMetadata {
 
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Token {
-    // define token owner
+    //define token owner
     pub owner_id: AccountId,
-    // list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
+    //list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
     pub approved_account_ids: HashMap<AccountId, u64>,
-    // the next approval ID
+    //the next approval ID
     pub next_approval_id: u64,
 }
 
-// The Json token is what will be returned from view calls. This object exists onn-chain only. It holds all the information
-// for an NFT that you want to send back as JSON whenever someone does a view call
+//The Json token is what will be returned from view calls. This object exists off-chain only. It holds all the information
+//for an NFT that you want to send back as JSON whenever someone does a view call
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct JsonToken {
@@ -55,14 +55,14 @@ pub struct JsonToken {
     pub token_id: TokenId,
     //token owner
     pub owner_id: AccountId,
-    // token metadata
+    //token metadata
     pub metadata: TokenMetadata,
     //list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
     pub approved_account_ids: HashMap<AccountId, u64>,
 }
 
 /*
-Imagine we want a funciton for quering contract metadata. We'll create that following this logic:
+Imagine we want a funciton for quering contract metadata. Create it following this logic:
 - create a trait containing your desired function
 - implement that trait on the 'Contract' struct
 - so that whenever we call the 'Contract' struct the function is also executed

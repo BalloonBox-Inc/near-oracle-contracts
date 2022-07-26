@@ -25,29 +25,29 @@ mod royalty;
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Contract {
-    // contract owner
+    //contract owner
     pub owner_id: AccountId,
 
-    // token IDs for a given account
+    //token IDs for a given account
     pub tokens_per_owner: LookupMap<AccountId, UnorderedSet<TokenId>>,
 
-    // token struct of a given token ID
+    //token struct of a given token ID
     pub token_by_id: LookupMap<TokenId, Token>,
 
-    // token medatada for a given token ID
+    //token medatada for a given token ID
     pub token_metadata_by_id: UnorderedMap<TokenId, TokenMetadata>,
 
-    // metadata for the contract
+    //metadata for the contract
     pub metadata: LazyOption<NFTContractMetadata>,
 }
 /*
-Notice: teh 'Contract' struct comprises of some custom data types, which we'll summarize here below:
+Notice: the 'Contract' struct comprises of some custom data types, which we'll summarize here below:
 AccountId: a string
 TokenId: a string
 Token, TokenMetadata, and NFTContractMetadata: are all structs, defined later
 */
 
-/// Helper structure for keys of the persistent collections.
+//Helper structure for keys of the persistent collections.
 #[derive(BorshSerialize)]
 pub enum StorageKey {
     TokensPerOwner,
@@ -69,7 +69,7 @@ impl Contract {
     */
     #[init]
     pub fn new_default_meta(owner_id: AccountId) -> Self {
-        // calls the other function "new" with some default meradata and the owner_id passed in as the only argument
+        // alls the other function "new" with some default meradata and the owner_id passed in as the only argument
         Self::new(
             owner_id,
             NFTContractMetadata {
@@ -86,14 +86,14 @@ impl Contract {
 
     /*
         initialization function (can only be called once).
-        this initializes the contract with metadata that was passed in and
-        the owner_id.
+        this initializes the contract with the metadata and
+        the owner_id that got fed to the function.
     */
     #[init]
     pub fn new(owner_id: AccountId, metadata: NFTContractMetadata) -> Self {
-        // create a variable of type Self initializing all fields
+        //create a variable of type Self initializing all fields
         let this = Self {
-            // set the owner_id field equal to the passed in owner_id
+            //set the owner_id field equal to the passed in owner_id
             owner_id,
             metadata: LazyOption::new(
                 StorageKey::NFTContractMetadata.try_to_vec().unwrap(),
@@ -109,7 +109,7 @@ impl Contract {
             ),
         };
 
-        // return the Contract object
+        //return the Contract object
         this
     }
 }
