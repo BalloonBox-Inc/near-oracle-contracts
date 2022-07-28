@@ -142,7 +142,7 @@ impl Contract {
             tokens_set.remove(token_id);
             // if the token set is now empty, we remove the owner from the tokens_per_owner collection
             if tokens_set.is_empty() {
-                self.tokens_per_owner.remove(account_id); 
+                self.tokens_per_owner.remove(account_id);
             } else {
             //if the token set is not empty, we simply insert it back for the account ID.
             self.tokens_per_owner.insert(account_id, &tokens_set);
