@@ -7,11 +7,13 @@ use near_sdk::{
 };
 use std::collections::HashMap;
 
+pub use crate::enumerate::*;
 pub use crate::internal::*;
 pub use crate::metadata::*;
 pub use crate::mint::*;
 pub use crate::nft_core::*;
 
+mod enumerate;
 mod internal;
 mod metadata;
 mod mint;
