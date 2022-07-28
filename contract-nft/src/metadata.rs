@@ -22,12 +22,12 @@ pub struct NFTContractMetadata {
 #[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
 pub struct TokenMetadata {
-    pub title: Option<String>, // ex. "Arch Nemesis: Mail Carrier" or "Parcel #5055"
-    pub description: Option<String>, // free-form description
-    pub media: Option<String>, // URL to associated media, preferably to decentralized, content-addressed storage
+    pub title: String, // ex. "Arch Nemesis: Mail Carrier" or "Parcel #5055"
+    pub description: String, // free-form description
+    pub media: String, // URL to associated media, preferably to decentralized, content-addressed storage
     pub media_hash: Option<Base64VecU8>, // Base64-encoded sha256 hash of content referenced by the `media` field. Required if `media` is included.
     pub copies: Option<u64>, // number of copies of this set of metadata in existence when token was minted.
-    pub issued_at: Option<u64>, // When token was issued or minted, Unix epoch in milliseconds
+    pub issued_at: u64, // When token was issued or minted, Unix epoch in milliseconds
     pub expires_at: Option<u64>, // When token expires, Unix epoch in milliseconds
     pub starts_at: Option<u64>, // When token starts being valid, Unix epoch in milliseconds
     pub updated_at: Option<u64>, // When token was last updated, Unix epoch in milliseconds
@@ -40,12 +40,12 @@ pub struct TokenMetadata {
 pub struct Token {
     //define token owner
     pub owner_id: AccountId,
-    //list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
-    pub approved_account_ids: HashMap<AccountId, u64>,
-    //the next approval ID
-    pub next_approval_id: u64,
-    //perfentage of royalty to be paid to an account
-    pub royalty: HashMap<AccountId, u32>,
+    // //list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
+    // pub approved_account_ids: HashMap<AccountId, u64>,
+    // //the next approval ID
+    // pub next_approval_id: u64,
+    // //perfentage of royalty to be paid to an account
+    // pub royalty: HashMap<AccountId, u32>,
 }
 
 //The Json token is what will be returned from view calls. This object exists off-chain only. It holds all the information
@@ -59,10 +59,10 @@ pub struct JsonToken {
     pub owner_id: AccountId,
     //token metadata
     pub metadata: TokenMetadata,
-    //list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
-    pub approved_account_ids: HashMap<AccountId, u64>,
-    //perfentage of royalty to be paid to an account
-    pub royalty: HashMap<AccountId, u32>,
+    // // list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
+    // pub approved_account_ids: HashMap<AccountId, u64>,
+    // //perfentage of royalty to be paid to an account
+    // pub royalty: HashMap<AccountId, u32>,
 }
 
 /*

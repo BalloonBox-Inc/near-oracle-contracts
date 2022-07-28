@@ -7,27 +7,16 @@ use near_sdk::{
 };
 use std::collections::HashMap;
 
-pub use crate::approval::*;
 pub use crate::internal::*;
 pub use crate::metadata::*;
 pub use crate::mint::*;
 pub use crate::nft_core::*;
-pub use crate::royalty::*;
-pub use crate::events::*;
 
-mod approval;
-mod enumeration;
 mod internal;
 mod metadata;
 mod mint;
 mod nft_core;
-mod royalty;
-mod events;
 
-//Declare the version of the standard
-pub const NFT_METADATA_SPEC: &str = "1.0.0";
-//This is the name of the NFT standard we're using
-pub const NFT_STANDARD_NAME: &str = "nep171";
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
@@ -72,7 +61,7 @@ impl Contract {
     /*
         initialization function (can only be called once).
         this initializes the contract with default metadata so the
-        user doesn't have to manually type metadata.
+        user doesn't have to manually type metadata - for testing only!
     */
     #[init]
     pub fn new_default_meta(owner_id: AccountId) -> Self {
@@ -80,8 +69,8 @@ impl Contract {
         Self::new(
             owner_id,
             NFTContractMetadata {
-                spec: "nft-1.0.0".to_string(),
-                name: "Tutorial to mint NFTs on NEAR".to_string(),
+                spec: "nft_1.0.0".to_string(),
+                name: "Credit score NFT minter".to_string(),
                 symbol: "Balloonbox".to_string(),
                 icon: None,
                 base_uri: None,
