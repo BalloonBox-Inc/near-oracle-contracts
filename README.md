@@ -6,11 +6,11 @@
 
 
 # NEAR Smart Contracts
-This repository contains the codebase of 2 distinct smart contract, hosted in these distinct repositories, respectively
+This repository contains the codebase of 2 distinct smart contracts, hosted respectively in
 - `contract-nft`: mint credit scores as NFTs
 - `contract-storescore`: store credit scores to the NEAR blockchain
 ---
 
-### Licences
+### :page_facing_up: Licences
 This Git Repo is released under the Apache 2.0 open source license.
-However, the codebase hosted under the directory `contract-nft` is regulated by a less rescrictive licence, namely the MIT Lincence. As such, we encourage developers to use such portion of the codebase entirely free of restrictions or limitations.
+However, the codebase hosted under the directory `contract-nft` is regulated by the less rescrictive MIT Lincence. As such, we encourage developers to use such portion of the codebase entirely free of restrictions or limitations.
