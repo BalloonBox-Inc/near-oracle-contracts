@@ -2,9 +2,9 @@
   "name": "near_oracle",
   "version": "1.0.0",
   "description": "2 smart contracts to: store & manipulate credit scores on NEAR blockchain and to mint such scores as NFTs",
-  "scripts": {
-    "build": "cd contract-storescore && bash build.sh && cd .. && ls && cd contract-nft && bash build.sh && cd ..",
-  },
   "author": "Irene Fabris",
   "license": "MIT & Apache 2.0",
+  "scripts": {
+    "build": "cd contract-storescore && bash build.sh && cd .. && ls && cd contract-nft && bash build.sh && cd .."
+  }
 }
