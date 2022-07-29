@@ -1,8 +1,8 @@
 use crate::*;
 pub type TokenId = String;
-//defines the payout type we'll be returning as a part of the royalty standards.
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
+//defines the payout type we'll be returning as a part of the royalty standards.
 pub struct Payout {
     pub payout: HashMap<AccountId, U128>,
 }
@@ -27,7 +27,7 @@ pub struct TokenMetadata {
     pub media: String, // URL to associated media, preferably to decentralized, content-addressed storage
     pub media_hash: Option<Base64VecU8>, // Base64-encoded sha256 hash of content referenced by the `media` field. Required if `media` is included.
     pub copies: Option<u64>, // number of copies of this set of metadata in existence when token was minted.
-    pub issued_at: u64, // When token was issued or minted, Unix epoch in milliseconds
+    pub issued_at: Option<u64>, // When token was issued or minted, Unix epoch in milliseconds
     pub expires_at: Option<u64>, // When token expires, Unix epoch in milliseconds
     pub starts_at: Option<u64>, // When token starts being valid, Unix epoch in milliseconds
     pub updated_at: Option<u64>, // When token was last updated, Unix epoch in milliseconds

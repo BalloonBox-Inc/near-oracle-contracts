@@ -49,8 +49,12 @@ impl Contract {
             "Token already exists"
         );
 
+        //save minting timestamp among the attributes of the TokenMetadata
+        let mut meta = metadata;
+        meta.issued_at = Some(env::block_timestamp());
         //insert token id and metadata
-        self.token_metadata_by_id.insert(&token_id, &metadata);
+        self.token_metadata_by_id.insert(&token_id, &meta);
+
 
         //call an internal method to add a token to the owner
         self.internal_add_token_to_owner(&token.owner_id, &token_id);
