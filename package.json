@@ -1,73 +1,10 @@
 {
-    "name": "rust-status-message-builder",
-    "version": "1.0.0",
-    "description": "Compiles NEAR Protocol example of setting and retrieving a status message per NEAR account",
-    "scripts": {
-      "build": "cargo build --target wasm32-unknown-unknown --release",
-      "build:web": "parcel build ./frontend/index.html --public-url ./ --no-minify",
-      "deploy:dev": "npm run build && near dev-deploy res/status_message.wasm",
-      "dev": "npm run deploy:dev && npm start",
-      "start": "npm run build && npm run build:web && env-cmd -f ./neardev/dev-account.env parcel ./frontend/index.html",
-      "postbuild": "cp target/wasm32-unknown-unknown/release/main.wasm ./res/"
-    },
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/near-examples/rust-status-message.git"
-    },
-    "keywords": [
-      "near-protocol",
-      "blockchain",
-      "rust",
-      "smart-contract"
-    ],
-    "author": "Irene Fabris",
-    "license": "(MIT AND Apache-2.0)",
-    "bugs": {
-      "url": "https://github.com/near-examples/rust-status-message/issues"
-    },
-    "homepage": "https://github.com/near-examples/rust-status-message#readme",
-    "dependencies": {
-      "big.js": "^5.2.2",
-      "borsh": "^0.4.0",
-      "env-cmd": "^10.1.0",
-      "near-api-js": "^0.43.1",
-      "prop-types": "^15.7.2",
-      "react": "^17.0.2",
-      "react-dom": "^17.0.2",
-      "regenerator-runtime": "^0.13.9"
-    },
-    "devDependencies": {
-      "@babel/core": "^7.14.0",
-      "@babel/preset-env": "^7.14.2",
-      "@babel/preset-react": "^7.13.13",
-      "cssnano": "^5.0.7",
-      "gh-pages": "^3.1.0",
-      "parcel-bundler": "^1.12.5",
-      "postcss": "^8.3.6",
-      "sass": "^1.37.0"
-    },
-    "resolutions": {
-      "@babel/preset-env": "7.13.8"
-    },
-    "browserslist": {
-      "production": [
-        ">0.2%",
-        "not dead",
-        "not op_mini all"
-      ],
-      "development": [
-        "last 1 chrome version",
-        "last 1 firefox version",
-        "last 1 safari version"
-      ]
-    }
-    {
-      "name": "near_oracle",
-      "version": "1.0.0",
-      "description": "Storing & manipulating credit scores on NEAR blockchain",
-      "author": "Irene Fabris",
-      "license": "Apache License 2.0",
-      "scripts": {
-          "build": "cd contract && bash build.sh && cd ../.."
-      }
+  "name": "near_oracle",
+  "version": "1.0.0",
+  "description": "2 smart contracts to: store & manipulate credit scores on NEAR blockchain and to mint such scores as NFTs",
+  "author": "Irene Fabris",
+  "license": "MIT & Apache 2.0",
+  "scripts": {
+    "build": "cd contract-storescore && bash build.sh && cd .. && ls && cd contract-nft && bash build.sh && cd .."
   }
+}
