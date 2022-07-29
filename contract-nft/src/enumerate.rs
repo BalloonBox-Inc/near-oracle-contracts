@@ -3,6 +3,17 @@ use crate::*;
 
 #[near_bindgen]
 impl Contract {
+
+    //Who is the owner of a token? Query it
+    pub fn whose_token(&self, token_id: TokenId) -> Option<AccountId> {
+        let token = self.token_by_id.get(&token_id);
+        if let Some(token) = token {
+            Some(token.owner_id)
+        } else {
+            None
+        }
+    }
+
     //Query for the total supply of NFTs on the contract
     pub fn nft_total_supply(&self) -> U128 {
         // return the length of the token_metadata_by_id data structure
