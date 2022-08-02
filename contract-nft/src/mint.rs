@@ -10,7 +10,7 @@ impl Contract {
         receiver_id: AccountId,
         // //we add an optional parameter for perpetual royalties
         // perpetual_royalties: Option<HashMap<AccountId, u32>>,
-) {
+) -> MintOutcome {
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 
@@ -84,5 +84,18 @@ impl Contract {
 
         //refund surplus storage to user OR panic if they didn't attach enough to cover for the required gas fee
         refund_deposit(required_storage_in_bytes);
+
+        // return an outcome struct describing whether the
+        // operation of minting a score as NFT was successful
+        let success = match self.whose_token((*token_id).to_string()) {
+            Some(x) if x == token.owner_id => true,
+            _ => false,
+        };
+        MintOutcome {
+            gas_used: env::used_gas(),
+            nft_id: token_id,
+            owner_id: token.owner_id,
+            successful_operation: success,
+        }
     }
 }

@@ -1,4 +1,5 @@
 use crate::*;
+use near_sdk::{Gas};
 pub type TokenId = String;
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "near_sdk::serde")]
@@ -63,6 +64,17 @@ pub struct JsonToken {
     // pub approved_account_ids: HashMap<AccountId, u64>,
     // //perfentage of royalty to be paid to an account
     // pub royalty: HashMap<AccountId, u32>,
+}
+
+// was the operation of minting a score as NFT successful?
+// the struct below describes the operation outcome
+#[derive(Serialize)]
+#[serde(crate = "near_sdk::serde")]
+pub struct MintOutcome {
+    pub gas_used: Gas,
+    pub nft_id: TokenId,
+    pub owner_id: AccountId,
+    pub successful_operation: bool,
 }
 
 /*
