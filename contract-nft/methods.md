@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://near.org/">
-    <img alt="NearMonotoneWhite" src="https://github.com/BalloonBox-Inc/NEARoracle-Contract/tree/main/images/monotone-white-bg.png" width="450" />
+    <img alt="NearMonotoneWhite" src="https://github.com/BalloonBox-Inc/NEARoracle-Contract/blob/dev/images/monotone-white-bg.png" width="450" />
   </a>
 </p>
 
@@ -26,6 +26,7 @@ List of state-handling functions.
         receiver_id: AccountId,
     ) -> MintOutcome { ... }
 ```
+> find the complete code of the *nft_mint()* function in the file [`./contract-nft/src/mint.rs`](./contract-nft/src/mint.rs).
 
 ## View Calls
 List of view-only functions.
@@ -63,4 +64,11 @@ pub fn nft_supply_for_owner(
         from_index: Option<U128>,
         limit: Option<u64>,
     ) -> Vec<JsonToken> { ... }
+
+#returns basic descriptive metadata about the smart contract
+    pub fn nft_metadata(
+        &self,
+    ) -> NFTContractMetadata { ... }
 ```
+> these view-only functions are stored in either one of the Rust files: [`./contract-nft/src/menumerate.rs`](./contract-nft/src/enumerate.rs) or [`./contract-nft/src/metadata.rs`](./contract-nft/src/metadata.rs).
+> N.B. The above documentation does not contain the function logic. We omitted it intentionally for readability sake, replacing it with the `{ ... }` placeholder. If you want to see the full source code, please consult the .rs files where the functions are stored.
