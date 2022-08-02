@@ -3,6 +3,8 @@ use crate::*;
 #[near_bindgen]
 impl Contract {
     #[payable]
+    //mint a token as an NFT and returns a struct indicating
+    //whether the minting operation was successful
     pub fn nft_mint(
         &mut self,
         token_id: TokenId,
