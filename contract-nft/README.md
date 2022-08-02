@@ -1,7 +1,6 @@
 <p align="center">
   <a href="https://near.org/">
-    <img alt="Near" src="https://github.com/irene-bbox/sc-near-mintingNFT/blob/main/images/near_oceanblue.png" 
-    width="900" />
+    <img alt="Near" src="https://github.com/BalloonBox-Inc/near-oracle-contracts/blob/dev/images/inverted-primary-logo-bg.png" width="700" />
   </a>
 </p>
 
