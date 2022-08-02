@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://near.org/">
-    <img alt="NearMonotoneWhite" src="https://github.com/BalloonBox-Inc/NEARoracle-Oracle/blob/dev/images/monotone-white-bg.png" width="450" />
+    <img alt="NearMonotoneWhite" src="https://github.com/BalloonBox-Inc/NEARoracle-Contract/tree/main/images/monotone-white-bg.png" width="450" />
   </a>
 </p>
 
@@ -8,8 +8,8 @@
 
 #### About
 The MFT-minter smart contract contains numerous public methods or functions, callable from outside of the contract. This documentations lists a few noteworthy methods, namely some of the ones invoked by the dApp frontend to interact with the smart contract. Methods can be of two types:
- - calls: (cost gas) these methods alter the contract state, i.e., they're state handlers
- - views: (gasless) these methods are view-only and are used to query the contract state without changing it
+ - :moneybag: calls: (cost gas) these methods alter the contract state, i.e., they're state handlers
+ - :free: views: (gasless) these methods are view-only and are used to query the contract state without changing it
 
 #### Help Us
 Have you spotted a mistake in our NEARoracle docs? Help us improve it by [letting us know](https://www.balloonbox.io/contact).
