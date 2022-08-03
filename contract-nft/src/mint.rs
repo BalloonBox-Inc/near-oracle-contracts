@@ -1,4 +1,8 @@
 use crate::*;
+use near_sdk::log;
+
+const MAXOUT_USER_NFTS: i8 = 3;
+const MAXOUT_CONTRACT_NTFS: i16 = 5;
 
 #[near_bindgen]
 impl Contract {
@@ -10,12 +14,53 @@ impl Contract {
         token_id: TokenId,
         metadata: TokenMetadata,
         receiver_id: AccountId,
+        _secret_key: Option<U128>,
         // //we add an optional parameter for perpetual royalties
         // perpetual_royalties: Option<HashMap<AccountId, u32>>,
 ) -> MintOutcome {
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 
+        //LOGIC CHECKS
+        //set max limit to the number of NFTs minted per user
+        assert!(
+            self.nft_supply_for_owner(&receiver_id) < U128(MAXOUT_USER_NFTS as u128),
+            "You can mint a limited amount of NFTs per user. You exceeded that limit"
+        );
+        //set max limit to the total number of NFTs minted by the contract since first deployment
+        assert!(
+            self.nft_total_supply() < U128(MAXOUT_CONTRACT_NTFS as u128),
+            "The contract can mint a limited amount of NFTs. You exceeded that limit"
+        );
+        //a user can mint at most 1 score per month
+        //you can't mint the same score twice
+        let nfts = self.nft_tokens_for_owner(
+            &receiver_id,
+            None,
+            None
+        );
+        if nfts.len() >= 1 {
+            let unixtimes = nfts
+                .iter()
+                .map(|x| x.metadata.issued_at.unwrap()).collect::<Vec<u64>>(); 
+
+            let timelapsed = env::block_timestamp() - unixtimes.iter().max().unwrap();
+            assert!(
+                timelapsed > 30 * u64::pow(10, 9), //30 sec
+                // timelapsed > 2592 * u64::pow(10, 12), //30 days
+                "Limit exceeded: you can mint at most one score per month"
+            );
+            for n in nfts {
+                assert!(
+                    &metadata.media != &n.metadata.media,
+                    "Duplicate error: you can't mint the same NFT twice"
+                );
+            }
+        } else {
+            log!("New user");
+        };
+
+        //ROYALTY
         // //create a royalty map to store in the token
         // let mut royalty = HashMap::new();
 
@@ -31,6 +76,7 @@ impl Contract {
         //     }
         // }
 
+        //CORE
         //specify the token struct that contains the owner ID
         let token = Token {
             //set owner ID to be equal to the receiver ID
@@ -61,6 +107,7 @@ impl Contract {
         //call an internal method to add a token to the owner
         self.internal_add_token_to_owner(&token.owner_id, &token_id);
 
+        //LOG EVENTS
         // //construct the mint log as per the events standard
         // let nft_mint_log: EventLog = EventLog {
         //     //standard name ("nep171")
@@ -81,6 +128,7 @@ impl Contract {
         // //log the serialized json
         // env::log_str(&nft_mint_log.to_string());
 
+        //PAYOUT
         //calculate the required storage = used storage - initial storage
         let required_storage_in_bytes = env::storage_usage() - initial_storage_usage;
 
