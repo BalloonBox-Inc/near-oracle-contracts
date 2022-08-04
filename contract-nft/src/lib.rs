@@ -12,13 +12,19 @@ pub use crate::internal::*;
 pub use crate::metadata::*;
 pub use crate::mint::*;
 pub use crate::nft_core::*;
+pub use crate::events::*;
 
 mod enumerate;
 mod internal;
 mod metadata;
 mod mint;
 mod nft_core;
+mod events;
 
+//Declare the version of the standard
+pub const NFT_METADATA_SPEC: &str = "1.0.0";
+//Declare the name of the NFT standard we're using
+pub const NFT_STANDARD_NAME: &str = "nep171";
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
