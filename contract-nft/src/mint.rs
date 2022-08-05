@@ -14,9 +14,8 @@ impl Contract {
         token_id: TokenId,
         metadata: TokenMetadata,
         receiver_id: AccountId,
-        _secret_key: Option<U128>,
-        // //we add an optional parameter for perpetual royalties
-        // perpetual_royalties: Option<HashMap<AccountId, u32>>,
+        //we add an optional parameter for perpetual royalties
+        perpetual_royalties: Option<HashMap<AccountId, u32>>,
 ) -> MintOutcome {
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
@@ -61,32 +60,32 @@ impl Contract {
         };
 
         //ROYALTY
-        // //create a royalty map to store in the token
-        // let mut royalty = HashMap::new();
+        //create a royalty map to store in the token
+        let mut royalty = HashMap::new();
 
-        // //if perpetual royalties were passed into the function:
-        // if let Some(perpetual_royalties) = perpetual_royalties {
-        //     //make sure that the length of the perpetual royalties is below 5
-        //     //since we won't have enough GAS to pay out that many people
-        //     assert!(perpetual_royalties.len() < 5, "Cannot add more than 4 perpetual royalty amounts");
+        //if perpetual royalties were passed into the function:
+        if let Some(perpetual_royalties) = perpetual_royalties {
+            //make sure that the length of the perpetual royalties is below 5
+            //since we won't have enough GAS to pay out that many people
+            assert!(perpetual_royalties.len() < 5, "Cannot add more than 4 perpetual royalty amounts");
 
-        //     //iterate through the perpetual royalties and insert the account and amount in the royalty map
-        //     for (account, amount) in perpetual_royalties {
-        //         royalty.insert(account, amount);
-        //     }
-        // }
+            //iterate through the perpetual royalties and insert the account and amount in the royalty map
+            for (account, amount) in perpetual_royalties {
+                royalty.insert(account, amount);
+            }
+        };
 
         //CORE
         //specify the token struct that contains the owner ID
         let token = Token {
             //set owner ID to be equal to the receiver ID
             owner_id: receiver_id,
-            // //set the approved account IDs to the default value (an empty map)
-            // approved_account_ids: Default::default(),
-            // //the next approval ID is set to 0
-            // next_approval_id: 0,
-            // //the map of perpetual royalties for the token (The owner will get 100% - total perpetual royalties)
-            // royalty,
+            //set the approved account IDs to the default value (an empty map)
+            approved_account_ids: Default::default(),
+            //the next approval ID is set to 0
+            next_approval_id: 0,
+            //the map of perpetual royalties for the token (The owner will get 100% - total perpetual royalties)
+            royalty,
         };
 
         //insert the token ID and the token struct,

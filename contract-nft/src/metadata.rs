@@ -41,12 +41,12 @@ pub struct TokenMetadata {
 pub struct Token {
     //define token owner
     pub owner_id: AccountId,
-    // //list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
-    // pub approved_account_ids: HashMap<AccountId, u64>,
-    // //the next approval ID
-    // pub next_approval_id: u64,
-    // //perfentage of royalty to be paid to an account
-    // pub royalty: HashMap<AccountId, u32>,
+    //list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
+    pub approved_account_ids: HashMap<AccountId, u64>,
+    //the next approval ID
+    pub next_approval_id: u64,
+    //perfentage of royalty to be paid to an account
+    pub royalty: HashMap<AccountId, u32>,
 }
 
 //The Json token is what will be returned from view calls. This object exists off-chain only. It holds all the information
@@ -60,10 +60,10 @@ pub struct JsonToken {
     pub owner_id: AccountId,
     //token metadata
     pub metadata: TokenMetadata,
-    // // list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
-    // pub approved_account_ids: HashMap<AccountId, u64>,
-    // //perfentage of royalty to be paid to an account
-    // pub royalty: HashMap<AccountId, u32>,
+    // list of approved account IDs that have access to transfer the token. This maps an account ID to an approval ID
+    pub approved_account_ids: HashMap<AccountId, u64>,
+    //perfentage of royalty to be paid to an account
+    pub royalty: HashMap<AccountId, u32>,
 }
 
 // was the operation of minting a score as NFT successful?
