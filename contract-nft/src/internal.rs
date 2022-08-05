@@ -99,12 +99,13 @@ pub (crate) fn royalty_to_payout(royalty_percentage: u32, amount_to_pay: Balance
 // ------------------------------- //
 //           gas methods           //
 // ------------------------------- //
-// These methods cost a gas fee because they change the state of the contract and thus 
-// incur into a fee for storing and altering data on blockchain. Since they change 
-// contract state, then they take in "&mut self" as one of their parameters and 
-// therefore must be implemented as methods on the "Contract" struct
-// Gas methods == change methods
-
+/*
+    These methods cost a gas fee because they change the state of the contract and thus 
+    incur into a fee for storing and altering data on blockchain. Since they change 
+    contract state, then they take in "&mut self" as one of their parameters and 
+    therefore must be implemented as methods on the "Contract" struct
+    Gas methods == change methods
+ */
 impl Contract {
     //add a token to the set of tokens an owner has
     pub(crate) fn internal_add_token_to_owner(
@@ -229,29 +230,31 @@ impl Contract {
         }
 
         //LOG EVENTS
-        // //construct the transfer log as per events standard
-        // let nft_transfer_log: EventLog = EventLog {
-        //     //standard name ("nep171")
-        //     standard: NFT_STANDARD_NAME.to_string(),
-        //     //version of the standard ("nft-1.0.0")
-        //     version: NFT_METADATA_SPEC.to_string(),
-        //     //the data related with the event stored in a vector
-        //     event: EventLogVariant::NftTransfer(vec![NftTransferLog {
-        //         //the optional authorized account ID to transfer the token on behald of the old owner
-        //         authorized_id,
-        //         //the old owner's account ID
-        //         old_owner_id: token.owner_id.to_string(),
-        //         //the account ID of the new owner of the token
-        //         new_owner_id: receiver_id.to_string(),
-        //         // a vector containing the token IDs as a string
-        //         token_ids: vec![token_id.to_string()],
-        //         //an optional memo to include
-        //         memo,
-        //     }]),
-        // };
+        //construct the transfer log as per events standard.
+        //Whenever an NFT is transferred, the 'internal_transfer()' function is called
+        //so you'll correctly be logging the transfers
+        let nft_transfer_log: EventLog = EventLog {
+            //standard name ("nep171")
+            standard: NFT_STANDARD_NAME.to_string(),
+            //version of the standard ("nft-1.0.0")
+            version: NFT_METADATA_SPEC.to_string(),
+            //the data related with the event stored in a vector
+            event: EventLogVariant::NftTransfer(vec![NftTransferLog {
+                //the optional authorized account ID to transfer the token on behald of the old owner
+                authorized_id,
+                //the old owner's account ID
+                old_owner_id: token.owner_id.to_string(),
+                //the account ID of the new owner of the token
+                new_owner_id: receiver_id.to_string(),
+                // a vector containing the token IDs as a string
+                token_ids: vec![token_id.to_string()],
+                //an optional memo to include
+                memo,
+            }]),
+        };
 
-        // //log the serialized json
-        // env::log_str(&nft_transfer_log.to_string());
+        //log the serialized json
+        env::log_str(&nft_transfer_log.to_string());
 
         //return the previous token object that was transferred
         token

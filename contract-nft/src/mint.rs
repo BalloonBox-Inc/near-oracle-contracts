@@ -2,7 +2,7 @@ use crate::*;
 use near_sdk::log;
 
 const MAXOUT_USER_NFTS: i8 = 3;
-const MAXOUT_CONTRACT_NTFS: i16 = 5;
+const MAXOUT_CONTRACT_NTFS: i16 = 10;
 
 #[near_bindgen]
 impl Contract {

@@ -13,6 +13,7 @@ pub use crate::metadata::*;
 pub use crate::mint::*;
 pub use crate::nft_core::*;
 pub use crate::events::*;
+pub use crate::approval::*;
 
 mod enumerate;
 mod internal;
@@ -20,6 +21,7 @@ mod metadata;
 mod mint;
 mod nft_core;
 mod events;
+mod approval;
 
 //Declare the version of the standard
 pub const NFT_METADATA_SPEC: &str = "1.0.0";
