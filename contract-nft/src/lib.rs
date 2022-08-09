@@ -82,6 +82,7 @@ impl Contract {
                 spec: "nft_1.0.0".to_string(),
                 name: "Credit score NFT minter".to_string(),
                 symbol: "Balloonbox".to_string(),
+                timestamp: env::block_timestamp(),
                 icon: None,
                 base_uri: None,
                 reference: None,

@@ -129,6 +129,7 @@ impl NonFungibleTokenCore for Contract {
 
     //implementation of the transfer call method.
     //This will transfer the NFT and call a method on the reciver_id contract
+    //Returns true if the token was successfully transferred to the receiver_id
     #[payable]
     fn nft_transfer_call(
         &mut self,

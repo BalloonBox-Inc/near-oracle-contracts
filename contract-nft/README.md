@@ -114,7 +114,7 @@ We also constrained the smart contract logic to the following:
  - every user can mint at most X-many scores (X is an arbitrary integer)
  - the contract can mint at most Y-many scores (Y is an arbitrary integer)
  - every user can mint at most 1 score per month
- - you can not mint the same NFT (i.e., the same media uri) twice (no duplicates)
+ - you can not mint the same NFT (i.e., the same media uri) twice for the same user (no duplicates)
  - you can not mint multiple NFTs under the same token id (unique id required)
  - you can transfer an NFT from account A to account B iff you are either the NFT owner or you own an approval id
  - the `nft_mint` function can not be called from outside of the contract for security reasons
