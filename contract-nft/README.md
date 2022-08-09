@@ -92,3 +92,29 @@ You're ready to interact with the smart contract. Use view calls to return viewi
 ```bash
 near view $NFT_CONTRACT_ID json_token '{"token_id": "nft1"}'                  # View call 
 ```
+
+---
+## What does the smart contract actually do?
+The functionalities of the smart contract are as follow:
+ - mint a credit score as an NFT on Near blockchain
+ - render the NFT among the __collectible__ tab of your Near wallet
+ - query (for free) all the NFTs stored in the contract and returns them to you
+ - pass in a user account and return all NFTs owned by that user
+ - pass in an NFT token id and return who owns it
+ - *log events whenever an NFT is minted or transferred (even in case of attempted and failed transfers)
+ - *transfer an NFT from user A to user B
+ - *grant/revoke permission to a user to transfer NFTs on your behalf
+ - *pay out a perpetual royalty to some whitelisted addresses whenever an NFT is transferred
+> *: these functionalities are beyond the scope of the Near grant, but we implemented them to easily scale up this project in the future
+
+
+:hedgehog: :clapper: :mailbox_with_no_mail: 
+
+We also constrained the smart contract logic to the following:
+ - every user can mint at most X-many scores (X is an arbitrary integer)
+ - the contract can mint at most Y-many scores (Y is an arbitrary integer)
+ - every user can mint at most 1 score per month
+ - you can not mint the same NFT (i.e., the same media uri) twice (no duplicates)
+ - you can not mint multiple NFTs under the same token id (unique id required)
+ - you can transfer an NFT from account A to account B iff you are either the NFT owner or you own an approval id
+ - the `nft_mint` function can not be called from outside of the contract for security reasons
