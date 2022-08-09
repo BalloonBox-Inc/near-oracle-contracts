@@ -20,6 +20,16 @@ impl Contract {
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 
+        //WHITELIST CHECK
+        //the account invoking the nft_mint() function must either be the
+        //contract owner or a whitelisted account if
+        if &env::predecessor_account_id() != &self.owner_id {
+            assert!(
+                self.whitelist.contains(&env::predecessor_account_id()),
+                "Permission error: the account id that called this function is not whitelisted. Try with another account"
+            );
+        };
+
         //LOGIC CHECKS
         //set max limit to the number of NFTs minted per user
         assert!(
@@ -133,6 +143,9 @@ impl Contract {
 
         //refund surplus storage to user OR panic if they didn't attach enough to cover for the required gas fee
         refund_deposit(required_storage_in_bytes);
+
+        //remove the function caller from the contract whitelist
+        self.whitelist.remove(&env::predecessor_account_id());
 
         // return an outcome struct describing whether the
         // operation of minting a score as NFT was successful
