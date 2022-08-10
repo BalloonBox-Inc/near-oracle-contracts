@@ -22,7 +22,7 @@ impl Contract {
 
         //WHITELIST CHECK
         //the account invoking the nft_mint() function must either be the
-        //contract owner or a whitelisted account if
+        //contract owner or a whitelisted account id
         if &env::predecessor_account_id() != &self.owner_id {
             assert!(
                 self.whitelist.contains(&env::predecessor_account_id()),

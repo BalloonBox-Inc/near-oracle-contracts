@@ -1,11 +1,14 @@
 // Import crates
-use near_sdk::collections::{LookupMap, Vector};
+use near_sdk::collections::{LookupSet, LookupMap, Vector};
 use near_sdk::{log,
     borsh::{self, BorshDeserialize, BorshSerialize},
     serde::{Deserialize, Serialize},
     AccountId, Gas, PanicOnDefault, BorshStorageKey,
 };
 use near_sdk::{env, near_bindgen};
+
+pub use crate::whitelist::*;
+mod whitelist;
 
 // --------------------------------------------------------------------- //
 //                          Define main objects                          //
@@ -58,6 +61,7 @@ pub struct ScoreOutcome {
 #[derive(BorshStorageKey, BorshSerialize)]
 pub enum StorageKey {
     Accounts { account_hash: Vec<u8> },
+    WhiteList,
 }
 
 // user's score, timestamp, and score description as a struct
@@ -89,6 +93,7 @@ pub struct Contract {
     owner_id: AccountId,
     records: LookupMap<String, Vector<User>>,
     contract_state: State,
+    whitelist: LookupSet<AccountId>,
 }
 
 // --------------------------------------------------------------------- //
@@ -104,7 +109,7 @@ impl Contract {
         // You should NOT initialize a contract if its state exists already
         assert!(
             !env::state_exists(),
-            "ERR_THE_CONTRACT_IS_ALREADY_INITIALIZED"
+            "The contract is already initialized"
         );
         Self {
             owner_id,
@@ -113,6 +118,7 @@ impl Contract {
                 user_count: 0u64,
                 score_count: 0u64,
             },
+            whitelist: LookupSet::new(StorageKey::WhiteList.try_to_vec().unwrap()),
         }
     }
 
@@ -129,6 +135,17 @@ impl Contract {
     // #[private]
     #[payable]
     pub fn store_score(&mut self, score: u16, description: String) -> ScoreOutcome {
+
+        //WHITELIST CHECK
+        //the account invoking the store_score() function must be
+        //either the contract owner or a whitelisted account id
+        if &env::predecessor_account_id() != &self.owner_id {
+            assert!(
+                self.whitelist.contains(&env::predecessor_account_id()),
+                "Permission error: the account id that called this function is not whitelisted. Try with another account"
+            );
+        };
+
         let account_id = String::from(env::predecessor_account_id());
         let new_score = User {
             score: score,
@@ -178,12 +195,16 @@ impl Contract {
                         }
                     } else {
                         env::panic_str(
-                            "ERR_EXCEEDED_HUNDRED_SCORES_UPPERBOUND_OR_LATEST_SCORE_IS_TOO_RECENT",
+                            "Exceeded score upperbound OR latest score is too recent",
                         )
                     }
                 }
             }
         }
+
+        //remove the account id that called the store_score() function from the contract whitelist
+        self.whitelist.remove(&env::predecessor_account_id());
+
         // return an outcome struct describing whether the
         // operation of storing a score to blockchain was successful
         ScoreOutcome {
@@ -211,7 +232,7 @@ impl Contract {
             };
         } else {
             // implement logic in case the above Option<T> returns a NoneType
-            env::panic_str("ERR_THIS_USER_HAS_NO_SCORE_HISTORY")
+            env::panic_str("This user has no score history")
         }
     }
 
