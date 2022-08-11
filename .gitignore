@@ -38,3 +38,6 @@ yarn-error.log*
 *.py
 *.ipynb
 *ground.rs
+
+# wasm files of the compiled smart contract
+*.wasm
