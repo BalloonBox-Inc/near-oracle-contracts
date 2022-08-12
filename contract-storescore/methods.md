@@ -21,6 +21,7 @@ List of state-handling functions.
     #a struct indicating whether the operation was successful
     #(although this is a public method, it can only be invoked either
     #by the contract owner or by a whitelisted Near account id)
+    
     #[payable]
     pub fn store_score(
         &mut self,
@@ -32,6 +33,7 @@ List of state-handling functions.
     #add an account ID to the whitelist returning `true` if the account id 
     #was not in the whitelist before, `false` otherwise.
     #This method can be called only by the smart contract owner.
+
     #[private]
     pub fn add_to_whitelist(
         &mut self,

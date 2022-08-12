@@ -7,7 +7,7 @@
 # PUBLIC METHODS
 
 #### About :spiral_notepad:
-The MFT-minter smart contract contains numerous public methods or functions, callable from outside of the contract. This documentations lists a few noteworthy methods, namely some of the ones invoked by the dApp as the frontend interacts with the smart contract. Methods can be of two types:
+The NFT-minter smart contract contains numerous public methods or functions, callable from outside of the contract. This documentations lists a few noteworthy methods, namely some of the ones invoked by the dApp as the frontend interacts with the smart contract. Methods can be of two types:
  - **calls: (cost gas)** these methods alter the contract state, i.e., they're state handlers
  - **views: (gasless)** these methods are view-only and are used to query the contract state without changing it
 
@@ -19,6 +19,8 @@ List of state-handling functions.
 ```bash
     #mint a token as an NFT and returns a struct indicating
     #whether the minting operation was successful
+    #(although this is a public method, it can only be called either
+    #by the contract owner or by a whitelisted Near account id)
     pub fn nft_mint(
         &mut self,
         token_id: TokenId,
