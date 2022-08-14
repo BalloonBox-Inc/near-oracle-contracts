@@ -37,7 +37,7 @@ List of state-handling functions.
     #[private]
     pub fn add_to_whitelist(
         &mut self,
-        account_id: AccountId
+        account_id: &AccountId
         ) -> bool { ... }
 ```
 > Find the complete code of the *store_scoret()* function in the file [`./contract-storescore/src/lib.rs`](src/lib.rs), whereas *add_to_whitelist()* is found in [`./contract-storescore/src/whitelist.rs`](src/whitelist.rs).
