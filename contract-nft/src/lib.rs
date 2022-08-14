@@ -130,4 +130,4 @@ impl Contract {
 }
 
 #[cfg(test)]
-mod tests;
+mod test_utils;
