@@ -12,20 +12,20 @@ fn account(account_name: &str) -> AccountId {
 }
 
 //set up a mock context for testing
-fn get_context(is_view: bool, predecessor: AccountId) -> VMContext {
+fn get_context(name: AccountId) -> VMContext {
     VMContextBuilder::new()
         .current_account_id(account("spensa.testnet"))
-        .signer_account_id(predecessor.clone())
-        .predecessor_account_id(predecessor.clone())
-        .is_view(is_view)
+        .signer_account_id(name.clone())
+        .predecessor_account_id(name.clone())
         .build()
 }
 
-fn meta() -> TokenMetadata {
+//construct sample TokenMetadata struct
+fn meta(mymedia: &str) -> TokenMetadata {
     TokenMetadata {
         title: "Test NFT".to_string(),
         description: "A minted NFT".to_string(),
-        media: "https://near.org/wp-content/uploads/2021/09/brand-stack-300x300.png".to_string(),
+        media: [mymedia, ".png"].join("").to_string(),
         media_hash: None,
         copies: None,
         issued_at: Some(env::block_timestamp()),
@@ -38,11 +38,11 @@ fn meta() -> TokenMetadata {
     }
 }
 
-
+//unit tests start here
 #[test]
 fn test_whitelist() {
-    let mut context = get_context(
-        false, 
+    //set up the testing context
+    let mut context = get_context( 
         account("doomslug.testnet")
     );
     testing_env!(context);
@@ -72,8 +72,8 @@ fn test_whitelist() {
 #[test]
 #[should_panic(expected = "This function can only be called by the contract owner")]
 fn test_whitelist_fail() {
-    let mut context = get_context(
-        false, 
+    //set up the testing context
+    let mut context = get_context( 
         account("doomslug.testnet")
     );
     testing_env!(context.clone());
@@ -92,7 +92,7 @@ fn test_whitelist_fail() {
 fn test_init() {
     //set up the testing context
     let mut context = get_context(
-        false, account("doomslug.testnet")
+        account("doomslug.testnet")
     );
     testing_env!(context.clone());
 
@@ -110,6 +110,7 @@ fn test_init() {
         account("benjiman.testnet"), metadata
     );
 
+    //check initialization matches expectations
     assert_eq!(account("benjiman.testnet"), contract.owner_id, 
         "ERR: Owner should be benjiman at initialization");
     assert!(!contract.metadata.is_none(),
@@ -129,7 +130,6 @@ fn test_init() {
 fn test_enums() {
     //set up the testing context
     let mut context = get_context(
-        false, 
         account("doomslug.testnet")
     );
     testing_env!(context.clone());
@@ -137,24 +137,160 @@ fn test_enums() {
         account("doomslug.testnet")
     );
 
+    //declare account ids
     let s = account("spensa.testnet");
     let r = account("rainbow.testnet");
     let s1 = account("spensa.testnet");
     let r1 = account("rainbow.testnet");
-    context.attached_deposit = u128::pow(10, 23);
-    testing_env!(context.clone());
-    contract.nft_mint("001".to_string(), meta(), s, None);
-    context.attached_deposit = u128::pow(10, 23);
-    testing_env!(context.clone());
-    contract.nft_mint("002".to_string(), meta(), s1, None);
-    context.attached_deposit = u128::pow(10, 23);
-    testing_env!(context.clone());
-    contract.nft_mint("003".to_string(), meta(), r, None);
 
+    //mint an NFT attaching a deposit
+    context.attached_deposit = u128::pow(10, 23);
+    testing_env!(context.clone());
+    contract.nft_mint(
+        "001".to_string(), 
+        meta("nft#1"),
+        s, 
+        None
+    );
 
+    //mint a second NFT
+    context.attached_deposit = u128::pow(10, 23);
+    // testing_env!(context.clone());
+    contract.nft_mint(
+        "002".to_string(),
+        meta("nft#2"), 
+        s1, 
+        None
+    );
+
+    //mint a third NFT
+    context.attached_deposit = u128::pow(10, 23);
+    // testing_env!(context.clone());
+    contract.nft_mint(
+        "003".to_string(),
+        meta("nft#3"),
+        r,
+        None
+    );
+
+    //enumeration methods should return the correct count of minted NFTs
     assert_eq!(U128(3), contract.nft_total_supply());
     assert_eq!(3, contract.nft_tokens(None, None).len());
     assert_eq!(U128(2), contract.nft_supply_for_owner(&account("spensa.testnet")));
     assert_eq!(U128(1), contract.nft_supply_for_owner(&r1));
     assert_eq!(Some(r1), contract.whose_token("003".to_string()));
+}
+
+
+#[test]
+pub fn test_mint() {
+    //set up the testing context
+    let mut context = get_context(
+        account("doomslug.testnet")
+    );
+    testing_env!(context.clone());
+    let mut contract = Contract::new_default_meta(
+        account("doomslug.testnet")
+    );
+
+    //mint first NFT attaching a deposit
+    let b = account("bob.testnet");
+    context.attached_deposit = u128::pow(10, 23);
+    testing_env!(context.clone());
+    contract.nft_mint(
+        "001".to_string(),
+        meta("nft#1"), 
+        b,
+        None
+    );
+
+    //ensure that token parameters (owner, media, title, timestamp) match expectations
+    let token1 = contract.token_by_id.get(&"001".to_string());
+    if let Some(i) = token1 {
+        assert_eq!(account("bob.testnet"), i.owner_id,
+            "ERR: token owner mismatch");
+    };
+    let meta1 = contract.token_metadata_by_id.get(&"001".to_string());
+    if let Some(i) = meta1 {
+        assert_eq!("nft#1.png".to_string(), i.media,
+            "ERR: token media mismatch");    
+        assert_eq!("Test NFT".to_string(), i.title,
+            "ERR: token title mismatch");
+        assert!(!i.issued_at.is_none());
+    };
+
+    //mint second NFT attaching a deposit
+    let spensa = account("spensa.testnet");
+    contract.add_to_whitelist(&spensa);
+    context.signer_account_id = spensa.clone();
+    testing_env!(context.clone());
+
+    let token2 = contract.nft_mint(
+        "002".to_string(),
+        meta("nft#2"), 
+        spensa.clone(),
+        None
+    );
+    assert!(!contract.whitelist.contains(&spensa));
+    assert!(token2.successful_operation);
+    assert_eq!("002".to_string(), token2.nft_id);
+}
+
+
+#[test]
+#[should_panic(expected = "Duplicate error: you can't mint the same NFT twice")]
+pub fn test_mint_duplicate() {
+    //set up the testing context
+    let mut context = get_context(
+        account("doomslug.testnet")
+    );
+    testing_env!(context.clone());
+    let mut contract = Contract::new_default_meta(
+        account("doomslug.testnet")
+    );
+    let s = account("spensa.testnet");
+
+
+    //try mint the same NFT twice
+    context.attached_deposit = u128::pow(10, 23);
+    testing_env!(context.clone());
+    contract.nft_mint(
+        "001".to_string(),
+        meta("duplicate-nft"), 
+        s.clone(),
+        None
+    );
+    context.attached_deposit = u128::pow(10, 23);
+    testing_env!(context.clone());
+    contract.nft_mint(
+        "002".to_string(),
+        meta("duplicate-nft"), 
+        s.clone(),
+        None
+    );
+}
+
+
+#[test]
+#[should_panic(expected = "Only whitelisted accounts can call this function")]
+pub fn test_mint_permissionless() {
+    let mut context = get_context(
+        account("doomslug.testnet")
+    );
+    testing_env!(context.clone());
+    let mut contract = Contract::new_default_meta(
+        account("doomslug.testnet")
+    );
+    let s = account("spensa.testnet");
+
+    //mint an NFT from a NOT whitelisted account
+    context.attached_deposit = u128::pow(10, 23);
+    context.signer_account_id = s.clone();
+    testing_env!(context.clone());
+    contract.nft_mint(
+        "001".to_string(),
+        meta("nft#1"), 
+        s.clone(),
+        None
+    );
 }

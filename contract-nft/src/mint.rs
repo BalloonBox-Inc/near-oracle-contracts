@@ -23,10 +23,10 @@ impl Contract {
         //WHITELIST CHECK
         //the account invoking the nft_mint() function must either be the
         //contract owner or a whitelisted account id
-        if &env::predecessor_account_id() != &self.owner_id {
+        if &env::signer_account_id() != &self.owner_id {
             assert!(
-                self.whitelist.contains(&env::predecessor_account_id()),
-                "Permission error: the account id that called this function is not whitelisted. Try with another account"
+                self.whitelist.contains(&env::signer_account_id()),
+                "Only whitelisted accounts can call this function"
             );
         };
 
@@ -48,26 +48,26 @@ impl Contract {
             None,
             None
         );
-        // if nfts.len() >= 1 {
-        //     let unixtimes = nfts
-        //         .iter()
-        //         .map(|x| x.metadata.issued_at.unwrap()).collect::<Vec<u64>>(); 
+        if nfts.len() >= 1 {
+            let unixtimes = nfts
+                .iter()
+                .map(|x| x.metadata.issued_at.unwrap()).collect::<Vec<u64>>(); 
 
-        //     let timelapsed = env::block_timestamp() - unixtimes.iter().max().unwrap();
-        //     assert!(
-        //         timelapsed > 30 * u64::pow(10, 9), //30 sec
-        //         // timelapsed > 2592 * u64::pow(10, 12), //30 days
-        //         "Limit exceeded: you can mint at most one score every 30 seconds"
-        //     );
-        //     for n in nfts {
-        //         assert!(
-        //             &metadata.media != &n.metadata.media,
-        //             "Duplicate error: you can't mint the same NFT twice"
-        //         );
-        //     }
-        // } else {
-        //     log!("New user");
-        // };
+            // let timelapsed = env::block_timestamp() - unixtimes.iter().max().unwrap();
+            // assert!(
+            //     timelapsed > 30 * u64::pow(10, 9), //30 sec
+            //     // timelapsed > 2592 * u64::pow(10, 12), //30 days
+            //     "Limit exceeded: you can mint at most one score every 30 seconds"
+            // );
+            for n in nfts {
+                assert!(
+                    &metadata.media != &n.metadata.media,
+                    "Duplicate error: you can't mint the same NFT twice"
+                );
+            }
+        } else {
+            log!("New user");
+        };
 
         //ROYALTY
         //create a royalty map to store in the token
@@ -145,7 +145,7 @@ impl Contract {
         refund_deposit(required_storage_in_bytes);
 
         //remove the function caller from the contract whitelist
-        self.whitelist.remove(&env::predecessor_account_id());
+        self.whitelist.remove(&env::signer_account_id());
 
         // return an outcome struct describing whether the
         // operation of minting a score as NFT was successful
