@@ -16,7 +16,6 @@ impl Contract {
     //Adds the given account ID to the whitelist.
     //Returns `true` if the account id was not in the whitelist before, `false` otherwise.
     //This method can be called only by the smart contract owner.
-    #[private]
     pub fn add_to_whitelist(&mut self, account_id: &AccountId) -> bool {
 
         //ensure the function was called by the smart contract owner, else panic

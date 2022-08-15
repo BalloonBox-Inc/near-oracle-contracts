@@ -239,6 +239,12 @@ impl Contract {
     // -----------------------------------------------------//
     //              State-related implementations           //
     // -----------------------------------------------------//
+    
+    //Who is the owner of this smart contract? Query it
+    pub fn contract_owner(&self) -> AccountId {
+        let owner = self.owner_id.clone();
+        return owner;
+    }
 
     // gasless query of the state of the contract at a point in time
     pub fn read_state(&self) -> ContractState {

@@ -4,6 +4,12 @@ use crate::*;
 #[near_bindgen]
 impl Contract {
 
+    //Who is the owner of this smart contract? Query it
+    pub fn contract_owner(&self) -> AccountId {
+        let owner = self.owner_id.clone();
+        return owner;
+    }
+
     //Who is the owner of a token? Query it
     pub fn whose_token(&self, token_id: TokenId) -> Option<AccountId> {
         let token = self.token_by_id.get(&token_id);
