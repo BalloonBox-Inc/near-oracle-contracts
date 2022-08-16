@@ -75,3 +75,19 @@ pub fn nft_supply_for_owner(
 > These view-only functions are stored in either one of the Rust files: [`./contract-nft/src/enumerate.rs`](src/enumerate.rs) or [`./contract-nft/src/metadata.rs`](src/metadata.rs).
 > 
 > N.B. The above documentation does not contain the function logic. We omitted it intentionally for readability sake, replacing it with the `{ ... }` placeholder. If you want to see the full source code, please consult the .rs files where the functions are stored.
+
+
+## Pricing
+How much gas will it cost you to call a method in the smart contract? Here is an estimated forecast
+
+|Method|Call Type|Deposit|Gas|
+|:-----:|:-----:|:-----:|:-----:|
+|`add_to_whitelist`|call|-|550μ N|
+|`mint_nft`|call|-|N|
+|`contract_owner`|view|-|0 N|
+|`whose_token`|view|-|0 N|
+|`nft_total_supply`|view|-|0 N|
+|`nft_tokens`|view|-|0 N|
+|`nft_supply_for_owner`|view|-|0 N|
+|`nft_tokens_for_owner`|view|-|0 N|
+|`nft_metadata`|view|-|0 N|
