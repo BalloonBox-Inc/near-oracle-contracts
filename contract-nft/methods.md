@@ -78,12 +78,12 @@ pub fn nft_supply_for_owner(
 
 
 ## Pricing
-How much gas will it cost you to call a method in the smart contract? Here is an estimated forecast
+How much gas does it cost to call a smart contract method? Here is an estimate
 
 |Method|Call Type|Deposit|Gas|
 |:-----:|:-----:|:-----:|:-----:|
-|`add_to_whitelist`|call|-|550μ N|
-|`mint_nft`|call|-|N|
+|`add_to_whitelist`|call|-|0.550m N|
+|`mint_nft`|call|0.1 N|5-25m N|
 |`contract_owner`|view|-|0 N|
 |`whose_token`|view|-|0 N|
 |`nft_total_supply`|view|-|0 N|
