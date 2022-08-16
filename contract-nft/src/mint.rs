@@ -1,5 +1,6 @@
 use crate::*;
-use near_sdk::log;
+use near_sdk::{log, env};
+use near_sdk::json_types::Base64VecU8;
 
 const MAXOUT_USER_NFTS: i8 = 3;
 const MAXOUT_CONTRACT_NTFS: i16 = 7;
@@ -109,6 +110,9 @@ impl Contract {
         //save minting timestamp among the attributes of the TokenMetadata
         let mut meta = metadata;
         meta.issued_at = Some(env::block_timestamp());
+        //hash the the token's metadata.media uri using the sha256 function
+        let hash = Base64VecU8(env::sha256(meta.media.as_bytes()));
+        meta.media_hash = Some(hash);
         //insert token id and metadata
         self.token_metadata_by_id.insert(&token_id, &meta);
 

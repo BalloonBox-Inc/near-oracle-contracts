@@ -139,14 +139,14 @@ impl Contract {
         //WHITELIST CHECK
         //the account invoking the store_score() function must be
         //either the contract owner or a whitelisted account id
-        if &env::predecessor_account_id() != &self.owner_id {
+        if &env::signer_account_id() != &self.owner_id {
             assert!(
-                self.whitelist.contains(&env::predecessor_account_id()),
+                self.whitelist.contains(&env::signer_account_id()),
                 "Permission error: the account id that called this function is not whitelisted. Try with another account"
             );
         };
 
-        let account_id = String::from(env::predecessor_account_id());
+        let account_id = String::from(env::signer_account_id());
         let new_score = User {
             score: score,
             timestamp: env::block_timestamp(),
@@ -203,7 +203,7 @@ impl Contract {
         }
 
         //remove the account id that called the store_score() function from the contract whitelist
-        self.whitelist.remove(&env::predecessor_account_id());
+        self.whitelist.remove(&env::signer_account_id());
 
         // return an outcome struct describing whether the
         // operation of storing a score to blockchain was successful
@@ -239,7 +239,7 @@ impl Contract {
     // -----------------------------------------------------//
     //              State-related implementations           //
     // -----------------------------------------------------//
-    
+
     //Who is the owner of this smart contract? Query it
     pub fn contract_owner(&self) -> AccountId {
         let owner = self.owner_id.clone();

@@ -70,6 +70,7 @@ pub enum StorageKey {
     TokensPerTypeInner { token_type_hash: CryptoHash },
     TokenTypesLocked,
     WhiteList,
+    MediaHash,
 }
 
 #[near_bindgen]
