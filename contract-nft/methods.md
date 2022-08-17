@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://near.org/">
-    <img alt="NearMonotoneWhite" src="https://github.com/BalloonBox-Inc/near-oracle-contracts/blob/dev/images/monotone-white-bg.png" width="1300" />
+    <img alt="NearMonotoneWhite" src="https://github.com/BalloonBox-Inc/near-oracle-contracts/blob/dev/images/monotone-black.png" width="700" />
   </a>
 </p>
 
@@ -27,8 +27,22 @@ List of state-handling functions.
         metadata: TokenMetadata,
         receiver_id: AccountId,
     ) -> MintOutcome { ... }
+
+    #add the given account ID to the whitelist
+    #this method can be called only by the smart contract owner
+    pub fn add_to_whitelist(
+        &mut self, 
+        account_id: &AccountId
+        ) -> bool { ... }
+
+    #remove the given account ID from the whitelist
+    #this method can be called only by the smart contract owner
+    pub fn remove_from_whitelist(
+        &mut self,
+        account_id: &AccountId
+        ) -> bool { ... }
 ```
-> Find the complete code of the *nft_mint()* function in the file [`./contract-nft/src/mint.rs`](src/mint.rs).
+> Find the complete code of the above function in the following files: [`./contract-nft/src/mint.rs`](src/mint.rs) and [`./contract-nft/src/whitelist.rs`](src/whitelist.rs).
 
 ## View Calls
 List of view-only functions.
@@ -78,16 +92,16 @@ pub fn nft_supply_for_owner(
 
 
 ## Pricing
-How much gas does it cost to call a smart contract method? Here is an estimate
+How much gas does it cost to call a smart contract method? Here is an estimate:
 
 |Method|Call Type|Deposit|Gas|
 |:-----:|:-----:|:-----:|:-----:|
-|`add_to_whitelist`|call|-|0.550m N|
-|`mint_nft`|call|0.1 N|5-25m N|
-|`contract_owner`|view|-|0 N|
-|`whose_token`|view|-|0 N|
-|`nft_total_supply`|view|-|0 N|
-|`nft_tokens`|view|-|0 N|
-|`nft_supply_for_owner`|view|-|0 N|
-|`nft_tokens_for_owner`|view|-|0 N|
-|`nft_metadata`|view|-|0 N|
+|`add_to_whitelist`|call|-|0.550m Ⓝ|
+|`mint_nft`|call|0.1 N|5-25m Ⓝ|
+|`contract_owner`|view|-|0 Ⓝ|
+|`whose_token`|view|-|0 Ⓝ|
+|`nft_total_supply`|view|-|0 Ⓝ|
+|`nft_tokens`|view|-|0 Ⓝ|
+|`nft_supply_for_owner`|view|-|0 Ⓝ|
+|`nft_tokens_for_owner`|view|-|0 Ⓝ|
+|`nft_metadata`|view|-|0 Ⓝ|

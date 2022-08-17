@@ -23,4 +23,11 @@ impl Contract {
 
         self.whitelist.insert(&account_id)
     }
+
+    //Removes the given account ID from the whitelist.
+    //Returns `true` if the account id was in the whitelist, `false` otherwise.
+    //This method can be called only by the smart contract owner.
+    pub fn remove_from_whitelist(&mut self, account_id: &AccountId) -> bool {
+        self.whitelist.remove(&account_id)
+    }
 }
