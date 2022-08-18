@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://near.org/">
-    <img alt="NearMonotoneWhite" src="https://github.com/BalloonBox-Inc/near-oracle-contracts/blob/dev/images/monotone-black.png" width="700" />
+    <img alt="NearMonotoneWhite" src="https://github.com/BalloonBox-Inc/near-oracle-contracts/blob/dev/images/monotone-black.png" width="550" />
   </a>
 </p>
 
@@ -12,11 +12,8 @@ In this guide, you'll learn how to utilize the codebase of a Rust smart contract
 ---
 
 
-### Create NEAR account
-If you don't own a NEAR wallet yet, create one. Navigate to NEAR testnet [wallet](https://wallet.testnet.near.org) and click on 'Create Account'.
-
-
 ### Configure CLI
+If you don't own a NEAR wallet yet, create one. Navigate to NEAR testnet [wallet](https://wallet.testnet.near.org) and click on 'Create Account'. Next, install the NEAR CLI.
 ```bash
 npm install -g near-cli                                             # Install the NEAR CLI
 near                                                                # To see various possible commands run
@@ -44,18 +41,19 @@ Follow these 6 steps to deploy a Smart Contract on NEAR:
 
 Run in terminal,
 ```bash
-git clone https://github.com/BalloonBox-Inc/near-oracle-contracts.git   <path_to_your_local_directory> # clone this Git Repo locally
-export A1=bruno.testnet                                              # Export path to your testnet account name
+git clone https://github.com/BalloonBox-Inc/near-oracle-contracts.git   <path_to_your_local_dir> # clone this Git Repo locally
+export A1=bruno.testnet                                                      # Export path to your testnet account name
 export A2=benji.testnet
 echo $A1      
+
 # now, ensure you are in the root folder and run
 yarn build && near deploy --wasmFile out/main.wasm --accountId $A1           # Deploy the contract
 near call $A1 new_default_meta '{"owner_id": "'$NA1'"}' --accountId $A1      # Initialize the contract
 near call $A1 nft_mint '{"token_id": "001", "metadata": {"title": "SpaceN", "description": "SpaceN: Falcon Heavy", "media": "https://c.tenor.com/RaotAGr2LeYAAAAC/near-near-blockchain.gif"}, "receiver_id": "'$A1'"}' --accountId $A1 --amount 0.1   # Mint the NFT
+
 # remember: only whitelisted users can call nft_mint(). So, whitelist if needed
-near call $A1 add_to_whitelist '{"account_id":"'$A2''"}' --accountId $A1
-# now benji.testnet can call mint_nft()
-near view $A1 nft_metadata                                                    # Call view functions
+near call $A1 add_to_whitelist '{"account_id":"'$A2'"}' --accountId $A1       # now benji.testnet can call mint_nft()
+near view $A1 nft_metadata                                                    # Call view functions                                                   
 ```
 Congratulations :raised_hands: :tada: :partying_face: ! You've just minted an NFT on NEAR testnet. <br />
 > * `bruno.testnet` is the name of your NEAR testnet account <br />
