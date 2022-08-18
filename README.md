@@ -24,42 +24,42 @@ The structure of this Git Repo (directories and subdirectories) is as follow. Th
 
 ```bash
 .
-──
-  ├── contract-nft
-  │   ├── res
-  │   │   └── *.wasm                #the smart contract compiles to a .wasm file = the only file deployed to chain
-  │   ├── src
-  │   │   ├── approval.rs           #approve an account to transfer NFTs on your behalf
-  │   │   ├── enumerate.rs          #contains view-only methods to view contract state
-  │   │   ├── events.rs             #emit log events when NFTs are minted or transferred
-  │   │   ├── internal.rs           #internal methods invoked within the contract itself
-  │   │   ├── lib.rs                #core logic - most important file
-  │   │   ├── metadata.rs           #metadata objects storing NFT info
-  │   │   ├── mint.rs               #logic to mint NFTs
-  │   │   ├── nft_core.rs           #logic to transfer NFTs
-  │   │   ├── royalty.rs            #pay out perpetual royalties to someone
-  │   │   ├── tests.rs              #unit tests of the codebase
-  │   │   └── whitelist.rs          #grant someone permissions to invoke some methods
-  │   ├── Cargo.lock                #auto generates from Cargo.toml
-  │   ├── Cargo.toml                #the Rust manifest: declares all dependancies
-  │   ├── README.md
-  │   ├── build.sh                  #shell commands to build and optimize your smart contract
-  │   └── methods.md                #docs on the methods in the smart contract and their cost
-  ├── contract-storescore
-  │   ├── res
-  │   │   └── *.wasm                #the smart contract compiles to a .wasm file = the only file deployed to chain
-  │   ├── src
-  │   │   ├── lib.rs                #core logic - most important file
-  │   │   └── whitelist.rs          #grant someone permissions to invoke some methods
-  │   ├── Cargo.lock                #auto generates from Cargo.toml
-  │   ├── Cargo.toml                #the Rust manifest: declares all dependancies
-  │   ├── README.md
-  │   ├── build.sh                  #shell commands to build and optimize your smart contract
-  │   └── methods.md                #docs on the methods in the smart contract and their cost
-  ├── images
-  ├── .gitignore
-  ├── LICENSE
-  ├── README.md
-  ├── package.json
-  └── rust-toolchain
+└─── 
+    ├── contract-nft
+    │   ├── res
+    │   │   └── *.wasm                #the smart contract compiles to a .wasm file = the only file deployed to chain
+    │   ├── src
+    │   │   ├── approval.rs           #approve an account to transfer NFTs on your behalf
+    │   │   ├── enumerate.rs          #contains view-only methods to view contract state
+    │   │   ├── events.rs             #emit log events when NFTs are minted or transferred
+    │   │   ├── internal.rs           #internal methods invoked within the contract itself
+    │   │   ├── lib.rs                #core logic - most important file
+    │   │   ├── metadata.rs           #metadata objects storing NFT info
+    │   │   ├── mint.rs               #logic to mint NFTs
+    │   │   ├── nft_core.rs           #logic to transfer NFTs
+    │   │   ├── royalty.rs            #pay out perpetual royalties to someone
+    │   │   ├── tests.rs              #unit tests of the codebase
+    │   │   └── whitelist.rs          #grant someone permissions to invoke some methods
+    │   ├── Cargo.lock                #auto generates from Cargo.toml
+    │   ├── Cargo.toml                #the Rust manifest: declares all dependancies
+    │   ├── README.md
+    │   ├── build.sh                  #shell commands to build and optimize your smart contract
+    │   └── dev.md                    #docs on the methods in the smart contract and their cost
+    ├── contract-storescore
+    │   ├── res
+    │   │   └── *.wasm                #the smart contract compiles to a .wasm file = the only file deployed to chain
+    │   ├── src
+    │   │   ├── lib.rs                #core logic - most important file
+    │   │   └── whitelist.rs          #grant someone permissions to invoke some methods
+    │   ├── Cargo.lock                #auto generates from Cargo.toml
+    │   ├── Cargo.toml                #the Rust manifest: declares all dependancies
+    │   ├── README.md
+    │   ├── build.sh                  #shell commands to build and optimize your smart contract
+    │   └── dev.md                    #docs on the methods in the smart contract and their cost
+    ├── images
+    ├── .gitignore
+    ├── LICENSE
+    ├── README.md
+    ├── package.json
+    └── rust-toolchain
 ```
