@@ -16,11 +16,10 @@ What does the smart contract actually do? Its functionalities are the following:
  - *transfer an NFT from user A to user B
  - *grant/revoke permission to a user to transfer NFTs on your behalf
  - *pay out a perpetual royalty to some whitelisted addresses whenever an NFT is transferred
-> * these functionalities are beyond the scope of the Near grant, but we implemented them to easily scale up this project in the future
+> :nerd_face: :shipit: :bowtie: *these functionalities are beyond the scope of the Near grant, but we implemented them to easily scale up this project in the future
 
-:nerd_face: :shipit: :bowtie:
 
-What does it NOT do? We also constrained the smart contract logic to the following:
+What does it NOT do? We set the following constrains to the smart contract logic:
  - every user can mint at most X-many scores (X is an arbitrary integer)
  - the contract can mint at most Y-many scores (Y is an arbitrary integer)
  - every user can mint at most 1 score per month
@@ -38,7 +37,7 @@ The NFT-minter smart contract contains numerous public methods or functions, cal
  - **calls: (cost gas)** these methods alter the contract state, i.e., they're state handlers
  - **views: (gasless)** these methods are view-only and are used to query the contract state without changing it
 
-> :handshake: **Help Us:** Have you spotted a mistake in our NEARoracle docs? Help us improve it by [letting us know](https://www.balloonbox.io/contact).
+> **Help Us:** :handshake: Have you spotted a mistake in our NEARoracle docs? Help us improve it by [letting us know](https://www.balloonbox.io/contact).
 
 ## Function Calls
 List of state-handling functions.
@@ -113,7 +112,7 @@ pub fn nft_supply_for_owner(
     ) -> NFTContractMetadata { ... }
 ```
 > These view-only functions are stored either in [`./contract-nft/src/enumerate.rs`](src/enumerate.rs) or [`./contract-nft/src/metadata.rs`](src/metadata.rs).
-> 
+
 > N.B. The above documentation does not contain the function logic. We omitted it intentionally for readability sake, replacing it with the `{ ... }` placeholder. If you want to see the full source code, please consult the .rs files where the functions are stored.
 
 

@@ -277,8 +277,8 @@ impl Contract {
 /*
  * the rest of this file sets up unit tests
  * execute them running the command:
- * cargo test --package near_oracle -- --nocapture
- * Note: 'near_oracle' comes from Cargo.toml's 'name' key
+ * cargo test --package storescore -- --nocapture
+ * Note: 'storescore' comes from Cargo.toml's 'name' key
  */
 
 #[cfg(test)]

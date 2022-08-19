@@ -56,7 +56,7 @@ near send sender.testnet receiver.testnet 1      # send 1 NEAR to receiver.testn
 To run the unit tests on your contract, run from terminal
 ```bash
 cargo test
-cargo test --package near_oracle --  --nocapture      # Note: 'near_oracle' comes from Cargo.toml's 'name' key
+cargo test --package storescore --  --nocapture      # Note: 'storescore' comes from Cargo.toml's 'name' key
 ```
 If your code passed the tests, you are now ready to deploy it on testnet.
 
@@ -71,7 +71,7 @@ Here are the commands to run the contract from terminal. You must be in the dire
 ```bash
 export PATH="$HOME/.cargo/bin:$PATH"                                       # (optional) export path to cargo files
 ./build.sh                                                                 # compile 
-near deploy myname.testnet --wasmFile res/near_oracle.wasm                 # deploy
+near deploy myname.testnet --wasmFile res/storescore.wasm                 # deploy
 near call myname.testnet new '{"owner_id": "myname.testnet"}' --accountId myname.testnet # initialize
 ```
 > :bulb: note: replace `myname.testnet` with the actual name of your testnet account
