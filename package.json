@@ -1,5 +1,5 @@
 {
-  "name": "storescore",
+  "name": "near_oracle",
   "version": "1.0.0",
   "description": "2 smart contracts to: store & manipulate credit scores on NEAR blockchain and to mint such scores as NFTs",
   "author": "Irene Fabris",

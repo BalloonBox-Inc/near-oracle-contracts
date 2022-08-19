@@ -45,8 +45,8 @@ export A1=bruno.testnet                                                      # E
 export A2=benji.testnet
 echo $A1      
 
-# now, ensure you are in the root folder and run
-yarn build && near deploy --wasmFile out/main.wasm --accountId $A1           # Deploy the contract
+cd contract-nft
+yarn build && near deploy --wasmFile res/nftmint.wasm --accountId $A1        # Deploy the contract
 near call $A1 new_default_meta '{"owner_id": "'$NA1'"}' --accountId $A1      # Initialize the contract
 near call $A1 nft_mint '{"token_id": "001", "metadata": {"title": "SpaceN", "description": "SpaceN: Falcon Heavy", "media": "https://c.tenor.com/RaotAGr2LeYAAAAC/near-near-blockchain.gif"}, "receiver_id": "'$A1'"}' --accountId $A1 --amount 0.1   # Mint the NFT
 
