@@ -10,28 +10,12 @@
 In this guide, you'll learn how to utilize the codebase of a Rust smart contract for NFT minting on NEAR Protocol. All it takes is 5 simple steps. Yet, before that you'll need to set up your environment. These instructions are for NEAR testnet.
 
 ---
-
-
-## Configure CLI
-If you don't own a NEAR wallet yet, create one. Navigate to NEAR testnet [wallet](https://wallet.testnet.near.org) and click on 'Create Account'. Next, install the NEAR CLI.
-```bash
-npm install -g near-cli                                             # Install the NEAR CLI
-near                                                                # To see various possible commands run
-near login                                                          # Log into your NEAR testnet wallet
-near keys <youraccountname>.testnet                                 # Visualize your keys running
-```
-
-## Set up Rust
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh      # If you haven't installed Rust yet, install it now using rustup
-rustup target add wasm32-unknown-unknown                            # Add Wasm toolchain
-```
-
-Some -but not all- Smart Contracts (e.g., SCRT Network, Internet Computer, NEAR Protocol, etc.) compile to WebAssembly (Wasm) <br /> and that's why we add the :gear: toolchain for Rust.
+## Requirements 
+The requirements for this project are: node.js, npm (or yarn), Rust, and Wasm toolchain
+If you haven't set up all requirements yet, do so following [these](https://github.com/BalloonBox-Inc/near-oracle-contracts/contract-storescore/dev.md) instructions. 
 
 ## Deploy
-
-Follow these 6 steps to deploy a Smart Contract on NEAR:
+Deploy the Smart Contract in 5 steps:
 1. :chains: **clone** the codebase
 2. :hammer_and_wrench: **build** the contract (auto compile)
 3. :clapper: **deploy** the contract

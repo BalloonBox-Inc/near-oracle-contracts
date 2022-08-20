@@ -4,137 +4,88 @@
   </a>
 </p>
 
+## Storing credit scores :1st_place_medal: :2nd_place_medal: :3rd_place_medal:
+What does this smart contract do?
+ - stores to blockchain (in a map) the credit scores of a user (max 1 score/month)
+ - query a user's credit score history, e.g., to monitor improvements
+ - query how many credit scores a user owns
+ - reads contract state
+
+
+# PUBLIC METHODS
 ---
-# NEAR Oracle Contract 
-## 	:eyes: At a Glance
-This is a smart contract in Rust that runs on the NEAR Protocol blockchain. The contract runs in the backend of the *NEARoracle*, a DApp for credit scoring built on NEAR. The oracle returns a numerical score affirming users' credibility and trustworthiness in the web3 space. The DApp was designed with one specific use case in mind: unsecured P2P lending, which is facilitating lending and borrowing of crypto loans. The DApp works as follows:
 
-- it acquires user's financial data by integrating with either or three validators ([Plaid](https://dashboard.plaid.com/overview), [Coinbase](https://developers.coinbase.com/), [Near](https://wallet.near.org/))
-- it runs an algorithm on given data to compute a score representing the financial health of a user
-- it writes the score to the NEAR Protocol blockchain via a Wasm smart contract built using the Rust `NEAR SDK`
+#### About :spiral_notepad:
+The NFT-minter smart contract contains numerous public methods or functions, callable from outside of the contract. This documentations lists a few noteworthy methods, namely some of the ones invoked by the dApp as the frontend interacts with the smart contract. Methods can be of two types:
+ - **calls: (cost gas)** these methods alter the contract state, i.e., they're state handlers
+ - **views: (gasless)** these methods are view-only and are used to query the contract state without changing it
 
-The complete source code of the algorithm is stored in [this](https://github.com/BalloonBox-Inc/near-oracle-algorithm) other Git Repo. The focus of this Repo is the Rust smart contract itself.
+> **Help Us:** :handshake: Have you spotted a mistake in our NEARoracle docs? Help us improve it by [letting us know](https://www.balloonbox.io/contact).
 
-## Fork or Execute Locally
-The rest of these docs are written with the developer's experience in mind. Follow the guideline to execute the contract yourself. This smart contract was already deployed under the `bbox.testnet` NEAR account. You can choose to either: (a) interact with the already-deployed contract; (b) deploy the contract yourself under a new account of your choice. In either case, the following is required. 
-
-### 1. :hammer_and_wrench: Requirements 
-
-node.js, npm (or yarn), Rust, and Wasm toolchain
-
-##### Install Rust and Wasm toolchain
-
-To [install Rust](https://doc.rust-lang.org/book/ch01-01-installation.html) on Linux or macOS, use the following command:
-
+## Function Calls
+List of state-handling functions.
 ```bash
-curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+    #stores a score to the Near blockchain and returns 
+    #a struct indicating whether the operation was successful
+    #(although this is a public method, it can only be invoked either
+    #by the contract owner or by a whitelisted Near account id)
+    pub fn store_score(
+        &mut self,
+        score: u16,
+        description: String
+        ) -> ScoreOutcome { ... }
+
+
+    #add an account ID to the whitelist returning `true` if the account id 
+    #was not in the whitelist before, `false` otherwise.
+    #This method can be called only by the smart contract owner.
+    pub fn add_to_whitelist(
+        &mut self,
+        account_id: &AccountId
+        ) -> bool { ... }
 ```
+> Find the complete code of the *store_scoret()* function in the file [`./contract-storescore/src/lib.rs`](src/lib.rs), whereas *add_to_whitelist()* is found in [`./contract-storescore/src/whitelist.rs`](src/whitelist.rs).
 
-Then, add the `wasm32-unknown-unknown` toolchain. This toolchain is required because the Rust contract compiles to [Wasm](https://webassembly.org/) (Web Assembly) to run on the NEAR blockchain.
-
+## View Calls
+List of view-only functions.
 ```bash
-rustup target add wasm32-unknown-unknown
+#query the entire score history of a Near account id
+#it returns a struct containg a vec<Score> where Score is itself a struct
+pub fn query_score_history(
+    &self,
+    account_id: String
+    ) -> MyScoreHistory { ... }
+
+#return the contract state at a point in time
+pub fn read_state(&self) -> ContractState { ... }
+
+#check whether a user has a score record
+pub fn user_exist(
+    &self,
+    account_id: String
+    ) -> bool { ... }
+
+#return the total number of scores of the account id you pass in
+pub fn maxout_check(
+    &self,
+    account_id: String
+    ) -> u64 { ... }
 ```
- 
-### 2. :luggage: Create a NEAR wallet 
-[Create](https://wallet.near.org/) a NEAR wallet following the official NEAR [docs](https://docs.near.org/docs/develop/basics/create-account). Once the account is running, you can interact with it:
-```bash
-near login                                       # log into your wallet
-near keys main.testnet                           # query and see the keys associated with your account
-near state main.testnet                          # view the state of your account
-near create-account sub.main.testnet --masterAccount main.testnet # create a sub-account from a main account
-near delete sub.main.testnet main.testnet        # delete an account and transfer leftover funds to a beneficiary master account
-near send sender.testnet receiver.testnet 1      # send 1 NEAR to receiver.testnet from sender.testnet
-```
-> :bulb: note: replace `main` and `sub` in the above commands with the names of your main and sub-account, e.g., `michael.testnet`
+> These view-only functions are stored in [`./contract-storescore/src/lib.rs`](src/lib.rs).
 
-* Why do we need sub-accounts? To simulate the interaction of multiple users with the same smart contract
-* Why would we ever want to delete an account? Altering the state of a contract after that contract got deployed can be tricky, so in some cases, it's best to start fresh, delete the old account, create it again, and deploy the updated contract from the new account
-
-### 3. :toolbox: Testing 
-
-To run the unit tests on your contract, run from terminal
-```bash
-cargo test
-cargo test --package storescore --  --nocapture      # Note: 'storescore' comes from Cargo.toml's 'name' key
-```
-If your code passed the tests, you are now ready to deploy it on testnet.
-
-### 4. :zap: Compile, Deploy, Initialize the Contract 
-The life cycle of a NEAR smart contract is the following: compile, deploy, initialize, interact. 
-  * compile your Rust code into a wasm file - locally in your machine - 
-  * deploy the wasm file to the NEAR blockchain
-  * initialize the on-chain contract invoking a (default or custom) initialization function
-  * interact with the contract by sending on-chain function calls (state handling operations which cost a gas fee) or view calls (view-only operations which are costless)
-
-Here are the commands to run the contract from terminal. You must be in the directory containing the *Cargo.toml* file and the *scr* and *res* folders.
-```bash
-export PATH="$HOME/.cargo/bin:$PATH"                                       # (optional) export path to cargo files
-./build.sh                                                                 # compile 
-near deploy myname.testnet --wasmFile res/storescore.wasm                 # deploy
-near call myname.testnet new '{"owner_id": "myname.testnet"}' --accountId myname.testnet # initialize
-```
-> :bulb: note: replace `myname.testnet` with the actual name of your testnet account
+> N.B. The above documentation does not contain the function logic. We omitted it intentionally for readability sake, replacing it with the `{ ... }` placeholder. If you want to see the full source code, please consult the .rs files where the functions are stored.
 
 
-### 5. :dart: Interact with the Contract 
-Now we're ready to interact!
+## Pricing
+How much gas does it cost to call a smart contract method? Our estimates follow. Remember that the gas price on the Near blockchain fluctuates over time; see docs on [Near Gas](https://docs.near.org/concepts/basics/transactions/gas). All view functions are free of charge.
 
-To store a score run
-```bash
-near call myname.testnet store_score '{"score": 650, "description": "Congrats! 650 points"}' --accountId myname.testnet
-```
-
-To query a user's score history run
-```bash
-near call myname.testnet query_score_history '{"account_id": "myname.testnet"}' --accountId myname.testnet
-```
-
-To check whether a user has a score record run
-```bash
-near call myname.testnet user_exist '{"account_id": "myname.testnet"}' --accountId myname.testnet
-```
-
-To query contract state, run
-```bash
-near view myname.testnet read_state
-```
-
-> :warning: :radioactive: :stop_sign: owner, signer, predecessors: a user can have multiple roles relative to a contract:
-> * the `owner` is the user account that deployed and initialized the contract;
-> * the `signer` is the user that signed the last transaction or action relating to the contract;
-> * the `predecessor` is the user that interacted with the contract last (i.e., most recently).
-> example: the very *first* user that appears in the terminal commands listed above is the owner of the contract we are calling. The user appearing right after the `--accountId` flag is the signer of the transaction.
-
----
-### :weight_lifting_woman: Using `near_sdk` Persistent Collections
-
-> Note to NEAR Rust developers: remember to choose your Rust objects based on their associated time complexity. Consult [this](https://docs.near.org/docs/concepts/data-storage#big-o-notation-1) table ranking object types in the `near_sdk' Rust collection by Big-O Notation.
-> Remember that all objects (structs, enums, etc.) which 'live' on-chain, should preferably be objects in the NEAR persistent collections, whereas objects that 'live' off-chain *must* be Rust std collections or Rust objects of some sort. near_sdk objects only exist on-chain and can't be rendered off-chain.
-
-### :racing_car: Gas Fees
-
-> The smart contract contains both some payable and some gasless methods. You can easily tell apart a payable method because of the macro `#[paybale]` above the method declaration. Payable methods cost a discretionary amount of gas -established by the NEAR Protocol- and you must *always* invoke them through a *function call*. All other methods that don't alter the contract state are gasless and are to be invoked through a *function view*. Both gas and gasless methods may or may not require some function parameters to be parsed. 
-
-> What is gas actually charging for? A few things
-> - data sorage on blockchain
-> - common and complex [actions](https://docs.near.org/docs/concepts/gas#the-cost-of-common-actions)
-> - [function calls](https://docs.near.org/docs/concepts/gas#function-calls) 
+|Method|Call Type|Gas|
+|:-----:|:-----:|:-----:|:-----:|
+|`store_score`|call|0.65m Ⓝ|
+|`add_to_whitelist`|call|0.550m Ⓝ|
+|`remove_from_whitelist`|call|0.550m Ⓝ|
 
 
-### :beetle: Debugging
-###### Compile time errors
-You must compile the smart contract before deploying it to blockchain. Compile the contract running the terminal command `./build.sh`. If compilation returns an error *unable to get packages from source* you might need to clear the cargo registry running `rm -rf /<userpathtocargoregistry>/.cargo/registry/`.
 
 
-###### Upgrading Contracts
 
-To upgrade contracts you need to first understand the difference between the code and state of a smart contract (official docs [here](https://www.near-sdk.io/upgrading/prototyping)). When a contract is deployed on top of an existing contract, the only thing that changes is the code, while the state remains the same causing developer issues.
-
-When your contract is executed, the NEAR Runtime reads the serialized state from the disk and attempts to load it using the current contract code. When your code changes but the serialized state stays the same, it can't figure out how to do this. You need to strategically upgrade your contracts and make sure that the runtime will be able to read your current state with the new contract code. What's the best practice to upgrade a contract?
-
-* If you're still in the R&D phase and want to deploy your prototype contract locally or on testnet, then you should delete all previous contract state by either:
-  1) running in terminal `rm -rf neardev && near dev-deploy`
-  2) or deleting and recreating the near wallet account
-
-* If you're ready to deploy a stable contract in production, you'll want to migrate the contract state following carefully these [production strategies](https://www.near-sdk.io/upgrading/production-basics). Once your contract graduates to community-governed mode, you'll have to upgrade the code via a [DAO vote](https://www.near-sdk.io/upgrading/via-dao-vote).

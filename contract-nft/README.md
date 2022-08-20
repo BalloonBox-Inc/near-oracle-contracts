@@ -28,9 +28,9 @@ What does it NOT do? We set the following constrains to the smart contract logic
  - you can transfer an NFT from account A to account B iff you are either the NFT owner or you own an approval id
  - for security reasons, the `nft_mint` function can not be called by the contract owner or by a whitelisted address
   
----
 
 # PUBLIC METHODS
+---
 
 #### About :spiral_notepad:
 The NFT-minter smart contract contains numerous public methods or functions, callable from outside of the contract. This documentations lists a few noteworthy methods, namely some of the ones invoked by the dApp as the frontend interacts with the smart contract. Methods can be of two types:
