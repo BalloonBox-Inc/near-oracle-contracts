@@ -6,17 +6,16 @@
 
 ## Storing credit scores :1st_place_medal: :2nd_place_medal: :3rd_place_medal:
 What does this smart contract do?
- - stores to blockchain (in a map) the credit scores of a user (max 1 score/month)
+ - stores to blockchain (in a map) the credit scores of a user - max 1 score/min (dev) and 1 score/month (prod) -
  - query a user's credit score history, e.g., to monitor improvements
  - query how many credit scores a user owns
  - reads contract state
 
-
-# PUBLIC METHODS
 ---
+# PUBLIC METHODS
 
 #### About :spiral_notepad:
-The NFT-minter smart contract contains numerous public methods or functions, callable from outside of the contract. This documentations lists a few noteworthy methods, namely some of the ones invoked by the dApp as the frontend interacts with the smart contract. Methods can be of two types:
+The store-score smart contract contains numerous public methods, callable from outside of the contract. Find below the noteworthy methods invoked by the dApp as the frontend interacts with the smart contract. Methods can be of two types:
  - **calls: (cost gas)** these methods alter the contract state, i.e., they're state handlers
  - **views: (gasless)** these methods are view-only and are used to query the contract state without changing it
 
@@ -43,8 +42,15 @@ List of state-handling functions.
         &mut self,
         account_id: &AccountId
         ) -> bool { ... }
+
+    #remove the given account ID from the whitelist
+    #this method can be called only by the smart contract owner
+    pub fn remove_from_whitelist(
+        &mut self,
+        account_id: &AccountId
+        ) -> bool { ... }
 ```
-> Find the complete code of the *store_scoret()* function in the file [`./contract-storescore/src/lib.rs`](src/lib.rs), whereas *add_to_whitelist()* is found in [`./contract-storescore/src/whitelist.rs`](src/whitelist.rs).
+> Find the complete code in [`./contract-storescore/src/lib.rs`](src/lib.rs), and in [`./contract-storescore/src/whitelist.rs`](src/whitelist.rs).
 
 ## View Calls
 List of view-only functions.
@@ -77,12 +83,12 @@ pub fn maxout_check(
 
 
 ## Pricing
-How much gas does it cost to call a smart contract method? Our estimates follow. Remember that the gas price on the Near blockchain fluctuates over time; see docs on [Near Gas](https://docs.near.org/concepts/basics/transactions/gas). All view functions are free of charge.
+How much gas does it cost to call a smart contract method? See our estimates follow. Remember that the gas price on the Near blockchain fluctuates over time; see docs on [Near Gas](https://docs.near.org/concepts/basics/transactions/gas). All view functions are free of charge.
 
 |Method|Call Type|Gas|
-|:-----:|:-----:|:-----:|:-----:|
+|:-----:|:-----:|:-----:|
 |`store_score`|call|0.65m Ⓝ|
-|`add_to_whitelist`|call|0.550m Ⓝ|
+|`add_to_whitelist`|call|0.55m Ⓝ|
 |`remove_from_whitelist`|call|0.550m Ⓝ|
 
 

@@ -629,7 +629,7 @@ dependencies = [
 
 [[package]]
 name = "nftmint"
-version = "0.1.1"
+version = "0.1.0"
 dependencies = [
  "near-sdk",
  "serde_json",

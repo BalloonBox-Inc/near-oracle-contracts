@@ -6,11 +6,11 @@
 
 
 # Storing Scores on NEAR Protocol	:eyes:
-This is a smart contract in Rust that runs on the NEAR Protocol blockchain. The contract runs in the backend of the *NEARoracle*, a credit scoring oracle built on NEAR. The oracle returns a numerical score affirming users' credibility and trustworthiness in the web3 space. The dApp was designed with one specific use case in mind: unsecured P2P lending, which is facilitating lending and borrowing of crypto loans. The dApp works as follows:
+This is a smart contract in Rust that runs on the NEAR Protocol blockchain. The contract runs in the backend of NearOracle, a credit scoring oracle built on NEAR. The oracle returns a numerical score affirming users' credibility and trustworthiness in the web3 space. The dApp was designed with one specific use case in mind: unsecured P2P lending, which is facilitating lending and borrowing of crypto loans. The dApp works as follows:
 
-- it acquires user's financial data by integrating with either or three validators ([Plaid](https://dashboard.plaid.com/overview), [Coinbase](https://developers.coinbase.com/), [Near](https://wallet.near.org/))
+- it acquires user's financial data by integrating with either or three validators ([Plaid](https://dashboard.plaid.com/overview), [Coinbase](https://developers.coinbase.com/), [MetaMask](https://metamask.io/))
 - it runs an algorithm on given data to compute a score representing the financial health of a user
-- it writes the score to the NEAR Protocol blockchain via a Wasm smart contract built using the Rust `NEAR SDK`
+- it writes the score to the NEAR Protocol blockchain via a smart contract built using the Rust `NEAR SDK`
 
 The complete source code of the algorithm is stored in [this](https://github.com/BalloonBox-Inc/near-oracle-algorithm) other Git Repo. The rest of these docs are written with the developer's experience in mind. Follow the guideline to clone the repo and deploy the contract yourself under a new near account of your choice. Start by setting up the following prerequisites.
 
@@ -19,14 +19,17 @@ The complete source code of the algorithm is stored in [this](https://github.com
 ### 1. :moneybag: NEAR wallet 
 [Create](https://wallet.near.org/) a NEAR wallet following the official NEAR [docs](https://docs.near.org/docs/develop/basics/create-account). Once the account is running, you can interact with it:
 ```bash
+export A1=parent.testnet
+export A2=child.parent.testnet
+
 near login                                       # log into your wallet
-near keys main.testnet                           # query and see the keys associated with your account
-near state main.testnet                          # view the state of your account
-near create-account sub.main.testnet --masterAccount main.testnet # create a sub-account from a main account
-near delete sub.main.testnet main.testnet        # delete an account and transfer leftover funds to a beneficiary master account
+near keys $A1                                    # query and see the keys associated with your account
+near state $A1                                   # view the state of your account
+near create-account $A2 --masterAccount $A1      # create a sub-account from a main account
+near delete $A2 $A1                              # delete an account and transfer leftover funds to a beneficiary master account
 near send sender.testnet receiver.testnet 1      # send 1 NEAR to receiver.testnet from sender.testnet
 ```
-> :bulb: note: replace `main` and `sub` in the above commands with the names of your main and sub-account, e.g., `michael.testnet`
+> :bulb: note: replace `parent` and `child` in the above commands with the names of your main and sub-account, e.g., `michael.testnet`
 
 * Why do we need sub-accounts? To simulate the interaction of multiple users with the same smart contract
 * Why would we ever want to delete an account? Altering the state of a contract after that contract got deployed can be tricky, so in some cases, it's best to start fresh, delete the old account, create it again, and deploy the updated contract from the new account.
@@ -64,19 +67,19 @@ If your code passed the tests, you are now ready to deploy it on testnet.
 ### 5. :zap: Compile, Deploy, Initialize the Contract 
 The life cycle of a NEAR smart contract is the following: compile, deploy, initialize, interact. 
   * compile your Rust code into a wasm file - locally in your machine - 
-  * deploy the wasm file to the NEAR blockchain
+  * deploy the `.wasm` file to the NEAR blockchain
   * initialize the on-chain contract invoking a (default or custom) initialization function
   * interact with the contract by sending on-chain function calls (state handling operations which cost a gas fee) or view calls (view-only operations which are costless)
 
-Here are the commands to run the contract from terminal. You must be in the directory containing the *Cargo.toml* file and the *scr* and *res* folders.
+Deploy from terminal with these commands. You must be in the directory containing the *Cargo.toml* file and the *scr* and *res* folders.
 ```bash
-export A1=doomslug.testnet
+export A1=parent.testnet
 export PATH="$HOME/.cargo/bin:$PATH"                                       # (optional) export path to cargo files
 ./build.sh                                                                 # compile 
 near deploy $A1 --wasmFile res/storescore.wasm                             # deploy
 near call $A1 new '{"owner_id": "'$A1'"}' --accountId $A1                  # initialize
 ```
-> :bulb: note: replace `doomslug.testnet` with the actual name of your testnet account
+> :bulb: note: replace `parent.testnet` with the actual name of your testnet account
 
 
 ### 6. :dart: Interact with the Contract 
@@ -103,7 +106,7 @@ near view $A1 read_state
 ```
 
 > :warning: :radioactive: :stop_sign: owner, signer, predecessors: a user can have multiple roles relative to a contract:
-> * the `owner` is the user account that deployed and initialized the contract;
+> * the `owner` is the user account that owns the smart contract;
 > * the `signer` is the user that signed the last transaction or action relating to the contract;
 > * the `predecessor` is the user that interacted with the contract last (i.e., most recently).
 > example: the very *first* user that appears in the terminal commands listed above is the owner of the contract we are calling. The user appearing right after the `--accountId` flag is the signer of the transaction.
@@ -111,7 +114,7 @@ near view $A1 read_state
 ---
 ### :weight_lifting_woman: Using `near_sdk` Persistent Collections
 
-> Note to NEAR Rust developers: remember to choose your Rust objects based on their associated time complexity. Consult [this](https://docs.near.org/docs/concepts/data-storage#big-o-notation-1) table ranking object types in the `near_sdk' Rust collection by Big-O Notation.
+> Note to NEAR Rust developers: remember to choose your Rust objects based on their associated time complexity. Consult [this](https://docs.near.org/concepts/storage/data-storage) table ranking object types in the `near_sdk' Rust collection by Big-O Notation.
 > Remember that all objects (structs, enums, etc.) which 'live' on-chain, should preferably be objects in the NEAR persistent collections, whereas objects that 'live' off-chain *must* be Rust std collections or Rust objects of some sort. near_sdk objects only exist on-chain and can't be rendered off-chain.
 
 ### :racing_car: Gas Fees
