@@ -182,8 +182,9 @@ impl Contract {
                 if let Some(j) = i.get(indx) {
                     let timelapsed = new_score.timestamp - j.timestamp;
                     // if statement w/ 2 conditions: iff there's less than 100 scores, iff last score is 30+ days old
-                    if i.len() < 100 && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
-                        // && timelapsed > 2592 * u64::pow(10, 12) {  // 30 days
+                    if i.len() < 100 
+                        // && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
+                        && timelapsed > 2592 * u64::pow(10, 12) {  // 30 days
                         let mut y = i;
                         y.push(&new_score);
                         // update the score count iff you succeeded writing it to chain
