@@ -37,4 +37,6 @@ yarn-error.log*
 # Python and Jupyter Notebook files
 *.py
 *.ipynb
-*ground.rs
+
+# wasm files of the compiled smart contract
+*.wasm

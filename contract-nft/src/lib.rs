@@ -1,5 +1,5 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::{LazyOption, LookupMap, UnorderedMap, UnorderedSet};
+use near_sdk::collections::{LazyOption, LookupMap, LookupSet, UnorderedMap, UnorderedSet};
 use near_sdk::json_types::{Base64VecU8, U128};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
@@ -12,13 +12,23 @@ pub use crate::internal::*;
 pub use crate::metadata::*;
 pub use crate::mint::*;
 pub use crate::nft_core::*;
+pub use crate::events::*;
+pub use crate::approval::*;
+pub use crate::whitelist::*;
 
 mod enumerate;
 mod internal;
 mod metadata;
 mod mint;
 mod nft_core;
+mod events;
+mod approval;
+mod whitelist;
 
+//Declare the version of the standard
+pub const NFT_METADATA_SPEC: &str = "1.0.0";
+//Declare the name of the NFT standard we're using
+pub const NFT_STANDARD_NAME: &str = "nep171";
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
@@ -37,6 +47,9 @@ pub struct Contract {
 
     //metadata for the contract
     pub metadata: LazyOption<NFTContractMetadata>,
+
+    //whitelist of users allowed to call the nft_mint() function
+    pub whitelist: LookupSet<AccountId>,
 }
 /*
 Notice: the 'Contract' struct comprises of some custom data types, which we'll summarize here below:
@@ -56,6 +69,8 @@ pub enum StorageKey {
     TokensPerType,
     TokensPerTypeInner { token_type_hash: CryptoHash },
     TokenTypesLocked,
+    WhiteList,
+    MediaHash,
 }
 
 #[near_bindgen]
@@ -74,6 +89,7 @@ impl Contract {
                 spec: "nft_1.0.0".to_string(),
                 name: "Credit score NFT minter".to_string(),
                 symbol: "Balloonbox".to_string(),
+                timestamp: env::block_timestamp(),
                 icon: None,
                 base_uri: None,
                 reference: None,
@@ -105,9 +121,14 @@ impl Contract {
             token_metadata_by_id: UnorderedMap::new(
                 StorageKey::TokenMetadataById.try_to_vec().unwrap(),
             ),
+
+            whitelist: LookupSet::new(StorageKey::WhiteList.try_to_vec().unwrap()),
         };
 
         //return the Contract object
         this
     }
 }
+
+#[cfg(test)]
+mod tests;

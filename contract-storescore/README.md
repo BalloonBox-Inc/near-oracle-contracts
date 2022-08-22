@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://near.org/">
-    <img alt="Near" src="https://github.com/BalloonBox-Inc/NEARoracle-Contract/blob/dev/images/inverted-primary-logo-bg.png" width="700" />
+    <img alt="Near" src="https://github.com/BalloonBox-Inc/near-oracle-contracts/blob/dev/images/inverted-primary-logo-bg.png" width="700" />
   </a>
 </p>
 
@@ -13,7 +13,7 @@ This is a smart contract in Rust that runs on the NEAR Protocol blockchain. The 
 - it runs an algorithm on given data to compute a score representing the financial health of a user
 - it writes the score to the NEAR Protocol blockchain via a Wasm smart contract built using the Rust `NEAR SDK`
 
-The complete source code of the algorithm is stored in [this](https://github.com/BalloonBox-Inc/NEARoracle-Oracle) other Git Repo. The focus of this Repo is the Rust smart contract itself.
+The complete source code of the algorithm is stored in [this](https://github.com/BalloonBox-Inc/near-oracle-algorithm) other Git Repo. The focus of this Repo is the Rust smart contract itself.
 
 ## Fork or Execute Locally
 The rest of these docs are written with the developer's experience in mind. Follow the guideline to execute the contract yourself. This smart contract was already deployed under the `bbox.testnet` NEAR account. You can choose to either: (a) interact with the already-deployed contract; (b) deploy the contract yourself under a new account of your choice. In either case, the following is required. 
