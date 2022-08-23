@@ -61,7 +61,7 @@ To run the unit tests on your contract, run from terminal
 cargo test
 cargo test --package storescore --  --nocapture      # Note: 'storescore' comes from Cargo.toml's 'name' key
 ```
-> :no_entry_sign: Beware: you can only test the `dev` branch of this project. If you try and execute tests in the `main` branch they will break, because `main` implements a smart contract that is constrained to storing/minting at most 1 score/month, whereas unit tests require the same user to mint multiple scores consecutively (without waiting for a month). So, ensure you run `cargo test` from the `dev` repo. If your code passed the tests, you are now ready to deploy it on testnet.
+> :no_entry_sign: Beware: you can only test the `dev` branch of this project. If you try and execute tests in the `main` branch they will break, because `main` implements a smart contract that is constrained to storing/minting at most 1 score/month, whereas unit tests require the same user to mint multiple scores consecutively (without waiting for a month). So, ensure you run `cargo test` from the `dev` branch. If your code passed the tests, you are now ready to deploy it on testnet.
 
 
 ### 5. :zap: Compile, Deploy, Initialize the Contract 
