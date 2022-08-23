@@ -56,9 +56,9 @@ impl Contract {
 
             let timelapsed = env::block_timestamp() - unixtimes.iter().max().unwrap();
             assert!(
-                //timelapsed > 60 * u64::pow(10, 9), //60 sec
-                timelapsed > 2592 * u64::pow(10, 12), //30 days
-                "Limit exceeded: you can mint at most one score per month"
+                timelapsed > 60 * u64::pow(10, 9), //60 sec
+                // timelapsed > 2592 * u64::pow(10, 12), //30 days
+                "Limit exceeded: you can mint at most one score per minute"
             );
             for n in nfts {
                 assert!(

@@ -10,7 +10,7 @@ use near_sdk::{env, near_bindgen};
 pub use crate::whitelist::*;
 mod whitelist;
 
-const MAXOUT_USER_SCORES: u64 = 24; 
+const MAXOUT_USER_SCORES: u64 = 12;
 
 // --------------------------------------------------------------------- //
 //                          Define main objects                          //
@@ -185,8 +185,8 @@ impl Contract {
                     let timelapsed = new_score.timestamp - j.timestamp;
                     // if statement w/ 2 conditions: iff there's less than X scores, iff last score is 30+ days old
                     if i.len() < MAXOUT_USER_SCORES
-                        // && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
-                        && timelapsed > 2592 * u64::pow(10, 12) {  // 30 days
+                        && timelapsed > 30 * u64::pow(10, 9) { // 30 seconds
+                        // && timelapsed > 2592 * u64::pow(10, 12) {  // 30 days
                         let mut y = i;
                         y.push(&new_score);
                         // update the score count iff you succeeded writing it to chain
