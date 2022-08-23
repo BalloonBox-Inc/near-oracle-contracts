@@ -10,7 +10,7 @@ use near_sdk::{env, near_bindgen};
 pub use crate::whitelist::*;
 mod whitelist;
 
-const MAXOUT_USER_SCORES: i32 = 24; 
+const MAXOUT_USER_SCORES: u64 = 24; 
 
 // --------------------------------------------------------------------- //
 //                          Define main objects                          //
