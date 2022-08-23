@@ -2,8 +2,8 @@ use crate::*;
 use near_sdk::{log, env};
 use near_sdk::json_types::Base64VecU8;
 
-const MAXOUT_USER_NFTS: i8 = 24;
-const MAXOUT_CONTRACT_NTFS: i32 = 100000;
+const MAXOUT_USER_NFTS: i8 = 12;
+const MAXOUT_CONTRACT_NTFS: i32 = 100;
 
 #[near_bindgen]
 impl Contract {
