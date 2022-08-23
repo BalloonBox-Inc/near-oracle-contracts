@@ -86,12 +86,12 @@ impl Contract {
         Self::new(
             owner_id,
             NFTContractMetadata {
-                spec: "nft_1.0.0".to_string(),
-                name: "Credit score NFT minter".to_string(),
-                symbol: "Balloonbox".to_string(),
+                spec: "nft-1.0.0".to_string(),
+                name: "nft_minter".to_string(),
+                symbol: "BBOXNFTMINT".to_string(),
                 timestamp: env::block_timestamp(),
                 icon: None,
-                base_uri: None,
+                base_uri: "https://ipfs.io/ipfs/".to_string(),
                 reference: None,
                 reference_hash: None,
             },

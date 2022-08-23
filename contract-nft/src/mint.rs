@@ -2,8 +2,8 @@ use crate::*;
 use near_sdk::{log, env};
 use near_sdk::json_types::Base64VecU8;
 
-const MAXOUT_USER_NFTS: i8 = 15;
-const MAXOUT_CONTRACT_NTFS: i16 = 30;
+const MAXOUT_USER_NFTS: i8 = 24;
+const MAXOUT_CONTRACT_NTFS: i32 = 100000;
 
 #[near_bindgen]
 impl Contract {
@@ -54,12 +54,12 @@ impl Contract {
                 .iter()
                 .map(|x| x.metadata.issued_at.unwrap()).collect::<Vec<u64>>(); 
 
-            // let timelapsed = env::block_timestamp() - unixtimes.iter().max().unwrap();
-            // assert!(
-            //     timelapsed > 30 * u64::pow(10, 9), //30 sec
-            //     // timelapsed > 2592 * u64::pow(10, 12), //30 days
-            //     "Limit exceeded: you can mint at most one score every 30 seconds"
-            // );
+            let timelapsed = env::block_timestamp() - unixtimes.iter().max().unwrap();
+            assert!(
+                //timelapsed > 60 * u64::pow(10, 9), //60 sec
+                timelapsed > 2592 * u64::pow(10, 12), //30 days
+                "Limit exceeded: you can mint at most one score per month"
+            );
             for n in nfts {
                 assert!(
                     &metadata.media != &n.metadata.media,
