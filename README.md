@@ -7,7 +7,7 @@
 # NEAR Smart Contracts
 This repository contains the codebase of 2 independent smart contracts, hosted respectively in
 - `contract-nft`: mint credit scores as NFTs
-- `contract-storescore`: store credit scores to the NEAR blockchain
+- `contract-storescore`: store credit scores on the NEAR blockchain
 
 > Caught an error in our code or docs? Please, let us know [here](https://www.balloonbox.io/contact).
 ---
